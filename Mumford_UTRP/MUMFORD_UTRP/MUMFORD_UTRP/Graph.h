@@ -17,7 +17,7 @@ public:
 	const std::vector<Vertex*> vertices();
 	Vertex* get_vertex_by_number(int n);
 	const std::vector<Edge*> edges();
-	
+	int size() const;
 };
 
 class Vertex

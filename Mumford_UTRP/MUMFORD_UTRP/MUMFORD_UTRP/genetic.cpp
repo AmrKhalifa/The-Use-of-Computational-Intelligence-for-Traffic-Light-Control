@@ -5,7 +5,9 @@
 
 #include<string>
 #include<iostream>
+
 #define TRANSFER_DELAY 5
+#define INFINITY 1000000
 
 template <class T> bool has_element(std::vector<T> vec, T elem) {
 	for (auto it = vec.begin(); it != vec.end(); it++)
@@ -27,7 +29,7 @@ bool repair(RouteSet &routeset, Graph &transit_network, int max_route_length) {
 	
 	auto routes_it = routes.begin();
 	int un_modified = 0;
-	while (chosen.size()< transit_network.vertices().size()) {
+	while (chosen.size()< transit_network.size()) {
 		un_modified++;
 		if ((*routes_it)->vertices().size() < max_route_length) {
 			bool extended_first_terminal = false;
@@ -46,6 +48,7 @@ bool repair(RouteSet &routeset, Graph &transit_network, int max_route_length) {
 				for (Edge* edge : terminals[1]->edges()) {
 					Vertex* neighbour = edge->neighbour_of(terminals[1]);
 					if (!has_element(chosen, neighbour)) {
+
 						(*routes_it)->add_vertex(neighbour);
 						chosen.push_back(neighbour);
 						un_modified = 0;
@@ -63,7 +66,7 @@ bool repair(RouteSet &routeset, Graph &transit_network, int max_route_length) {
 			un_modified = true;
 		}
 	}
-	return (chosen.size() == transit_network.vertices().size());
+	return (chosen.size() == transit_network.size());
 }
 
 RouteSet generate_random_routeset(Graph &transit_network, int min_route_length, int max_route_length, int n_routes) {
@@ -77,7 +80,7 @@ RouteSet generate_random_routeset(Graph &transit_network, int min_route_length, 
 		int n_reversals = 0;
 		int route_length = (rand() % (max_route_length - min_route_length)) + min_route_length;
 		if (i == 0) {
-			int start_node_number = rand() % transit_network.vertices().size();
+			int start_node_number = rand() % transit_network.size();
 			start_vertex = transit_network.get_vertex_by_number(start_node_number);
 		}
 		else {
@@ -112,7 +115,7 @@ RouteSet generate_random_routeset(Graph &transit_network, int min_route_length, 
 		generated_routeset.add_route(a_route);
 	}
 	bool routeset_is_valid = true;
-	if (chosen.size() < transit_network.vertices().size())
+	if (chosen.size() < transit_network.size())
 		routeset_is_valid = repair(generated_routeset, transit_network, max_route_length);
 	if (routeset_is_valid)
 		return generated_routeset;
@@ -123,38 +126,82 @@ RouteSet generate_random_routeset(Graph &transit_network, int min_route_length, 
 
 std::vector<Vertex*> * build_transport_graph(RouteSet r, Graph &transit_network) {
 	Graph g;
-	int n_nodes = transit_network.vertices().size();
-	std::vector<Vertex*> *pools = new std::vector<Vertex*>[transit_network.vertices().size()];
-	int i = 0;
+	int n_nodes = transit_network.size();
+	std::vector<Vertex*> *pools = new std::vector<Vertex*>[n_nodes];
+	int serial = 0;
 	for (Route* route : r.routes()) {
-		Vertex *v1 = new Vertex(i++);
-		Vertex *v2 = new Vertex(i++);
+		Vertex *v1 = new Vertex(serial++);
+		Vertex* v2;
 		pools[route->vertices()[0]->serial_number()].push_back(v1);
 		for (int i = 1; i < route->vertices().size(); i++) {//this will break on routes shorter than two nodes;
+			v2 = new Vertex(serial++);
+			pools[route->vertices()[i]->serial_number()].push_back(v2);
+
 			Vertex *v1_in_transit_network = route->vertices()[i-1];
 			Vertex *v2_in_transit_network = route->vertices()[i];
-
 			Edge* e = new Edge(v1_in_transit_network->distance_to(v2_in_transit_network), v1, v2);
-			pools[route->vertices()[i]->serial_number()].push_back(v2);
+
 			v1 = v2;
-			v2 = new Vertex(i++);
+
 		}
 	}
-	for (int i = 0; i < transit_network.vertices().size(); i++) {
+	for (int i = 0; i < transit_network.size(); i++) {
 		auto BusStop = pools[i];
 		for (int j = 0; j < BusStop.size(); j++) {
-			for (int k = 0; k < BusStop.size(); k++) {
+			for (int k = 0; k < j; k++) {
 				Edge* e = new Edge(TRANSFER_DELAY, BusStop[j], BusStop[k]);
 			}
 		}
 	}
 	return pools;
 }
-std::pair<int, int> fitness(RouteSet &population_member, Graph &transit_network) {
+std::pair<int, int> fitness(RouteSet &population_member, Graph &transit_network, int *demand_matrix) {
 	auto bus_stops = build_transport_graph(population_member, transit_network);
+	std::pair<int, int> fitness_(0, 0);
+	int n_bus_stops = transit_network.size();
 	int n_nodes = 0;
-	for (int i = 0; i < transit_network.vertices().size(); i++) 
+	for (int i = 0; i < n_bus_stops; i++)
 		n_nodes += bus_stops[i].size();
-	int *distances = new int[n_nodes*n_nodes];
-	return std::pair<int, int>();
+	int *distances = new int[n_nodes*n_nodes]();
+	for (int i = 0; i < n_nodes*n_nodes; i++)
+		distances[i] = INFINITY;
+	for (int i = 0; i < n_nodes; i++)
+		distances[i*n_nodes + i] = 0;
+	for (int i = 0; i < n_bus_stops; i++)
+		for (Vertex* v1 : bus_stops[i])
+			for (Edge* e : v1->edges()) {
+				Vertex* v2 = e->neighbour_of(v1);
+				distances[v1->serial_number() + v2->serial_number()*n_nodes] = e->length();
+			}
+	for (int k = 0; k < n_nodes; k++)
+		for (int i = 0; i < n_nodes; i++)
+			for (int j = 0; j < n_nodes; j++)
+				if (distances[i*n_nodes + k] + distances[k*n_nodes + j] < distances[i*n_nodes + j])
+					distances[i*n_nodes + j] = distances[i*n_nodes + k] + distances[k*n_nodes + j];
+	int *busstop_distances = new int[n_bus_stops*n_bus_stops];
+	for (int i = 0; i < n_bus_stops; i++) {
+		for (int j = 0; j < n_bus_stops; j++) {
+			int min_distance = INFINITY;
+			for (Vertex *v1 : bus_stops[i]) {
+				for (Vertex *v2 : bus_stops[j]) {
+					if (distances[v1->serial_number()*n_nodes + v2->serial_number()] < min_distance)
+						min_distance = distances[v1->serial_number()*n_nodes + v2->serial_number()];
+				}
+			}
+			busstop_distances[i*n_bus_stops + j] = min_distance;
+		}
+	}
+	for (int i = 0; i < n_bus_stops*n_bus_stops; i++)
+		busstop_distances[i] *= demand_matrix[i];
+	int total_distance_travelled = 0;
+	for (int i = 0; i < n_bus_stops; i++)
+		for (int j = 0; j < i; j++)
+			total_distance_travelled += busstop_distances[i*n_bus_stops + j];
+	fitness_.first = total_distance_travelled;
+	int total_routes_length = 0;
+	for (Route *r : population_member.routes()) 
+		for (int i = 1; i < r->vertices().size(); i++)
+			total_routes_length += r->vertices()[i - 1]->distance_to(r->vertices()[i]);
+	fitness_.second = total_routes_length;
+	return fitness_;
 }
