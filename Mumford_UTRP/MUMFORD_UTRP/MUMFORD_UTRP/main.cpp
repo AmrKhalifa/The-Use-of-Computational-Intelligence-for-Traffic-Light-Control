@@ -5,10 +5,12 @@
 #include<fstream>
 #include<string>
 #include<sstream>
+#include<cstdlib>
 
 #define DISTANCES_MAT_PATH "C:\\Users\\eltay\\Documents\\grad_project\\Mumford_UTRP\\CEC2013Supp\\Instances\\MandlTravelTimes.txt"
 #define DEMAND_MAT_PATH "C:\\Users\\eltay\\Documents\\grad_project\\Mumford_UTRP\\CEC2013Supp\\Instances\\MandlDemand.txt"
 int main() {
+	srand(685);
 	std::ifstream distances_file(DISTANCES_MAT_PATH);
 	std::ifstream demand_file(DEMAND_MAT_PATH);
 	std::string line;
@@ -57,9 +59,11 @@ int main() {
 			getline(demand_file, line); // get the empty line
 		}
 
-		RouteSet rs = generate_random_routeset(transit_network, 2, 8, 6);
-		std::cout << rs.to_string();
+		RouteSet rs1 = generate_random_routeset(transit_network, 2, 8, 6);
+		RouteSet rs2 = generate_random_routeset(transit_network, 2, 8, 6);
 
-		auto x =fitness(rs, transit_network, demand_matrix);
+		std::cout << rs1.to_string()<<"\n";
+		std::cout << rs2.to_string() << "\n";
+		std::cout << crossover(rs1, rs2).to_string();
 	}
 }

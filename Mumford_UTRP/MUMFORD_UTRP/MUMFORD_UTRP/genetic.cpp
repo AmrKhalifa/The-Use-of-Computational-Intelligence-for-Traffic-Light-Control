@@ -30,7 +30,6 @@ bool repair(RouteSet &routeset, Graph &transit_network, int max_route_length) {
 	auto routes_it = routes.begin();
 	int un_modified = 0;
 	while (chosen.size()< transit_network.size()) {
-		un_modified++;
 		if ((*routes_it)->vertices().size() < max_route_length) {
 			bool extended_first_terminal = false;
 			Vertex** terminals = (*routes_it)->terminals();
@@ -59,6 +58,7 @@ bool repair(RouteSet &routeset, Graph &transit_network, int max_route_length) {
 		}
 		routes_it++;
 		if (routes_it == routes.end()) {
+			un_modified++;
 			if (un_modified == 2)
 				break;
 			std::random_shuffle(routes.begin(), routes.end());
@@ -70,7 +70,6 @@ bool repair(RouteSet &routeset, Graph &transit_network, int max_route_length) {
 }
 
 RouteSet generate_random_routeset(Graph &transit_network, int min_route_length, int max_route_length, int n_routes) {
-	srand(685);
 	std::vector<Vertex*> chosen;
 	RouteSet generated_routeset;
 	for (int i = 0; i < n_routes; i++) {
@@ -90,6 +89,7 @@ RouteSet generate_random_routeset(Graph &transit_network, int min_route_length, 
 		a_route->add_vertex(start_vertex);
 		if (!has_element(chosen, start_vertex))
 			chosen.push_back(start_vertex);
+		//TODO this code does not respect min_route_length, FIX IT!!
 		while (n_reversals < 1 && a_route->vertices().size() < max_route_length) {
 			Vertex* extending_terminal;
 			std::vector<Vertex*> unused_neighbours;
@@ -155,9 +155,9 @@ std::vector<Vertex*> * build_transport_graph(RouteSet r, Graph &transit_network)
 	}
 	return pools;
 }
-std::pair<int, int> fitness(RouteSet &population_member, Graph &transit_network, int *demand_matrix) {
+std::pair < double, double > fitness(RouteSet &population_member, Graph &transit_network, int *demand_matrix) {
 	auto bus_stops = build_transport_graph(population_member, transit_network);
-	std::pair<int, int> fitness_(0, 0);
+	std::pair<double, double> fitness_(0, 0);
 	int n_bus_stops = transit_network.size();
 	int n_nodes = 0;
 	for (int i = 0; i < n_bus_stops; i++)
@@ -194,14 +194,64 @@ std::pair<int, int> fitness(RouteSet &population_member, Graph &transit_network,
 	for (int i = 0; i < n_bus_stops*n_bus_stops; i++)
 		busstop_distances[i] *= demand_matrix[i];
 	int total_distance_travelled = 0;
+	int total_demand = 0;
 	for (int i = 0; i < n_bus_stops; i++)
-		for (int j = 0; j < i; j++)
+		for (int j = 0; j < i; j++) {
 			total_distance_travelled += busstop_distances[i*n_bus_stops + j];
-	fitness_.first = total_distance_travelled;
+			total_demand += demand_matrix[i*n_bus_stops + j];
+		}
+	fitness_.first = (double)total_distance_travelled/total_demand;
 	int total_routes_length = 0;
 	for (Route *r : population_member.routes()) 
 		for (int i = 1; i < r->vertices().size(); i++)
 			total_routes_length += r->vertices()[i - 1]->distance_to(r->vertices()[i]);
 	fitness_.second = total_routes_length;
 	return fitness_;
+}
+
+void update_scores(RouteSet &r1, RouteSet &r2, RouteSet &result, double *scores) {
+	RouteSet parents[2] = { r1,r2 };
+	int n_routes = r1.routes().size();
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < n_routes; j++) {
+			scores[i*n_routes + j] = 0;
+			Route *r = parents[i].routes()[j];
+			for (Vertex *v : r->vertices())
+				if (!result.has_vertex(v))
+					scores[i*n_routes + j] += 1;
+			scores[i*n_routes + j] /= r->vertices().size();
+		}
+	}
+}
+bool have_common_vertex(RouteSet &rs, Route *r) {
+	for (Vertex *v : r->vertices())
+		if (rs.has_vertex(v))
+			return true;
+	return false;
+}
+RouteSet crossover(RouteSet &r1, RouteSet &r2) {
+	RouteSet result;
+	RouteSet parents[2] = { r1,r2 };
+	std::vector<int> *routes_selected = new std::vector<int>[2];
+	int n_routes = r1.routes().size();
+	int seed_route = rand() % n_routes;
+	result.add_route(r1.routes()[seed_route]);
+	routes_selected[0].push_back(seed_route);
+	double* routeset_scores = new double[n_routes*2]();
+	int current_routeset = 0;
+	for (int i = 1; i < n_routes; i++) {
+		update_scores(r1, r2, result, routeset_scores);// this does unneccessary work by calculating scores for nodes that have
+		double max_score = -INFINITY;									//already been added
+		int route_to_add_index;
+		for (int j = 0; j < n_routes;j++)
+			if (routeset_scores[n_routes*current_routeset + j] > max_score && !has_element(routes_selected[current_routeset], j) &&
+				have_common_vertex(result, parents[current_routeset].routes()[j])) {
+				max_score = routeset_scores[n_routes*current_routeset + j];
+				route_to_add_index = j;
+			}
+		result.add_route(parents[current_routeset].routes()[route_to_add_index]);
+		routes_selected[current_routeset].push_back(route_to_add_index);
+		current_routeset = 1 - current_routeset;
+	}
+	return result;
 }
