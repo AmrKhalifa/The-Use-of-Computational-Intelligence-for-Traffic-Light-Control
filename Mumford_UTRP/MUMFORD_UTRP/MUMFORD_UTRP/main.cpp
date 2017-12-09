@@ -62,7 +62,7 @@ int main() {
 		Individual *population = new Individual[population_size];
 		//RouteSet rs = generate_random_routeset(transit_network, min_route_length, max_route_length, n_routes);
 		seed_population(population, population_size, transit_network, min_route_length, max_route_length, n_routes, demand_matrix);
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < 5; i++) {
 			seamo_iterate(population, population_size, transit_network, min_route_length, max_route_length, n_routes, demand_matrix);
 			std::cout << "Generation :" << i << "\n";
 		}
@@ -82,10 +82,9 @@ int main() {
 		std::cout << population[best_so_far_indices[0]].fitness.first<<"\t"<< population[best_so_far_indices[0]].fitness.second<< "\n";
 
 		std::cout << population[best_so_far_indices[1]].routeset.to_string() << "\n";
-		std::cout << population[best_so_far_indices[1]].fitness.first << "\t" << population[best_so_far_indices[0]].fitness.second << "\n";
-		int x;
-		std::cin >> x;
+		std::cout << population[best_so_far_indices[1]].fitness.first << "\t" << population[best_so_far_indices[1]].fitness.second << "\n";
 
+		int x; std::cin >> x;
 	}
 
 }

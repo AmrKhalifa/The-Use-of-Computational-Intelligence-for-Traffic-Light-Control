@@ -16,7 +16,7 @@ bool dominates(Individual i1, Individual i2) {
 
 void seamo_iterate(Individual *population_array, int population_size, Graph &transit_network, int min_route_length,
 	int max_route_length, int n_routes, int *demand) {
-	std::vector<int>dominated;
+	int *dominated = new int [population_size]();
 	Individual *new_generation = new Individual[population_size];
 	double best_so_far[2] = { INFINITY,INFINITY };
 	int best_so_far_indices[2];
@@ -40,35 +40,35 @@ void seamo_iterate(Individual *population_array, int population_size, Graph &tra
 		Individual offspring = { offspring_routeset, fitness(offspring_routeset, transit_network,demand) };
 		//if is duplicate continue
 		if (dominates(offspring, population_array[i])) {
-			dominated.push_back(i);
+			dominated[i] = 1;
 			new_generation[i] = offspring;
 			continue;
 		}
 		if (dominates(offspring, population_array[j])) {
-			dominated.push_back(j);
+			dominated[j] = 1;;
 			new_generation[j] = offspring;
 			continue;
 		}
 		if (offspring.fitness.first < best_so_far[0]) {
 			if (best_so_far_indices[0] != i) {
-				dominated.push_back(i);
+				dominated[i] = 1;
 				new_generation[i] = offspring;
 				continue;
 			}
 			else {
-				dominated.push_back(j);
+				dominated[j] = 1;;
 				new_generation[j] = offspring;
 				continue;
 			}
 		}
 		if (offspring.fitness.second< best_so_far[1]) {
 			if (best_so_far_indices[1] != i) {
-				dominated.push_back(i);
+				dominated[i] = 1;
 				new_generation[i] = offspring;
 				continue;
 			}
 			else {
-				dominated.push_back(j);
+				dominated[j] = 1;
 				new_generation[j] = offspring;
 				continue;
 			}
@@ -77,18 +77,19 @@ void seamo_iterate(Individual *population_array, int population_size, Graph &tra
 			continue;
 		else
 			for (int k = 0; k < population_size; k++) {
-				if (has_element(dominated, k))
+				if (dominated[k])
 					continue;
 				if (dominates(offspring, population_array[k])) {
-					dominated.push_back(k);
+					dominated[k] = 1;
 					new_generation[k] = offspring;
 					continue;
 				}
 			}
 		for (int k = 0; k < population_size; k++)
-			if (has_element(dominated, k))
+			if (dominated[k])
 				population_array[k] = new_generation[k];
 
 	}
+	delete[] dominated;
 	delete[] new_generation;
 }

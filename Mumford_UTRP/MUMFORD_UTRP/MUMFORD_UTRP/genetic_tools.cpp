@@ -11,8 +11,8 @@
 #define MUTATION_PROBABILITY 0.3
 
 template <class T> bool has_element(std::vector<T> vec, T elem) {
-	for (auto it = vec.begin(); it != vec.end(); it++)
-		if (*it ==elem)
+	for (T t: vec)
+		if (t==elem)
 			return true;
 	return false;
 }
