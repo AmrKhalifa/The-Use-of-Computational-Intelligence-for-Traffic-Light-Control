@@ -25,6 +25,7 @@ public:
 	Vertex** terminals();
 	std::vector<Vertex*> vertices();
 	void add_vertex(Vertex* v);
+	void remove_terminal(int remove_start);
 	bool has_vertex(Vertex* v);
 	std::string to_string();
 };

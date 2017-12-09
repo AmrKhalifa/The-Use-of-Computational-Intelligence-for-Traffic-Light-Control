@@ -122,7 +122,8 @@
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RouteSet.cpp" />
-    <ClCompile Include="genetic.cpp" />
+    <ClCompile Include="genetic_tools.cpp" />
+    <ClCompile Include="genetic_algorithm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="genetic.h" />

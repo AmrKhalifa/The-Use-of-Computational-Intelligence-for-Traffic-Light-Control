@@ -24,7 +24,10 @@
     <ClCompile Include="RouteSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="genetic.cpp">
+    <ClCompile Include="genetic_tools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="genetic_algorithm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

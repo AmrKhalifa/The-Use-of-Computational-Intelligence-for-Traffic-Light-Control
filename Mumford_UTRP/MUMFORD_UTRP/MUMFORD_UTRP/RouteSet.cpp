@@ -84,6 +84,14 @@ void Route::add_vertex(Vertex * v)
 			throw 1;
 }
 
+void Route::remove_terminal(int remove_start)
+{
+	if (remove_start != 0)
+		vertices_vec.erase(vertices_vec.begin());
+	else
+		vertices_vec.pop_back();
+}
+
 bool Route::has_vertex(Vertex * v)
 {
 	for (auto it = vertices_vec.begin(); it != vertices_vec.end(); it++)

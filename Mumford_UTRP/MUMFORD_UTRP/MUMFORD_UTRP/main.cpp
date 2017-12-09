@@ -58,12 +58,34 @@ int main() {
 			}	
 			getline(demand_file, line); // get the empty line
 		}
+		int population_size = 200, min_route_length = 2, max_route_length = 8, n_routes = 6;
+		Individual *population = new Individual[population_size];
+		//RouteSet rs = generate_random_routeset(transit_network, min_route_length, max_route_length, n_routes);
+		seed_population(population, population_size, transit_network, min_route_length, max_route_length, n_routes, demand_matrix);
+		for (int i = 0; i < 200; i++) {
+			seamo_iterate(population, population_size, transit_network, min_route_length, max_route_length, n_routes, demand_matrix);
+			std::cout << "Generation :" << i << "\n";
+		}
+		double best_so_far[2] = { INFINITY,INFINITY };
+		int best_so_far_indices[2];
+		for (int i = 0; i < population_size; i++) {
+			if (population[i].fitness.first < best_so_far[0]) {
+				best_so_far[0] = population[i].fitness.first;
+				best_so_far_indices[0] = i;
+			}
+			if (population[i].fitness.second < best_so_far[1]) {
+				best_so_far[1] = population[i].fitness.second;
+				best_so_far_indices[1] = i;
+			}
+		}
+		std::cout << population[best_so_far_indices[0]].routeset.to_string() << "\n";
+		std::cout << population[best_so_far_indices[0]].fitness.first<<"\t"<< population[best_so_far_indices[0]].fitness.second<< "\n";
 
-		RouteSet rs1 = generate_random_routeset(transit_network, 2, 8, 6);
-		RouteSet rs2 = generate_random_routeset(transit_network, 2, 8, 6);
+		std::cout << population[best_so_far_indices[1]].routeset.to_string() << "\n";
+		std::cout << population[best_so_far_indices[1]].fitness.first << "\t" << population[best_so_far_indices[0]].fitness.second << "\n";
+		int x;
+		std::cin >> x;
 
-		std::cout << rs1.to_string()<<"\n";
-		std::cout << rs2.to_string() << "\n";
-		std::cout << crossover(rs1, rs2).to_string();
 	}
+
 }
