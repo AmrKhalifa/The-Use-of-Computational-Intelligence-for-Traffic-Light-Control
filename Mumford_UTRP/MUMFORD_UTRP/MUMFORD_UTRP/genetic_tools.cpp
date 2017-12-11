@@ -8,7 +8,7 @@
 
 #define TRANSFER_DELAY 5
 #define INFINITY 1000000
-#define MUTATION_PROBABILITY 0.3
+#define MUTATION_PROBABILITY 0.4
 
 template <class T> bool has_element(std::vector<T> vec, T elem) {
 	for (T t: vec)
@@ -217,6 +217,8 @@ std::pair < double, double > fitness(RouteSet &population_member, Graph &transit
 			delete v;
 	for (Edge* edge : edges_for_clean_up)
 		delete edge;
+	delete[] busstop_distances;
+	delete[] distances;
 	return fitness_;
 }
 
@@ -264,6 +266,7 @@ RouteSet crossover(RouteSet &r1, RouteSet &r2) {
 		routes_selected[current_routeset].push_back(route_to_add_index);
 		current_routeset = 1 - current_routeset;
 	}
+	delete[] routes_selected;
 	return result;
 }
 
@@ -299,6 +302,7 @@ bool connected_without_terminal(RouteSet &rs, Graph &transit_network, Route *r, 
 
 	for (int i = 0; i < transit_network.size(); i++)
 		delete vertices[i];
+	delete[] vertices;
 	for (Edge* edge : edges)
 		delete edge;
 	return ret_val;

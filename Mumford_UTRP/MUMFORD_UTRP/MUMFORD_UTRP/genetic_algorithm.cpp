@@ -1,4 +1,5 @@
 #include<genetic.h>
+#include<iostream>
 
 void seed_population(Individual *population_array, int population_size, Graph &transit_network, int min_route_length,
 																					int max_route_length, int n_routes, int *demand) {
@@ -32,7 +33,7 @@ void seamo_iterate(Individual *population_array, int population_size, Graph &tra
 	}
 	for (int i = 0; i < population_size; i++) {
 		int j;
-		while ((j = rand() % population_size) != i);
+		while ((j = rand() % population_size) == i);
 		RouteSet offspring_routeset = crossover(population_array[i].routeset, population_array[j].routeset);
 		if (!repair(offspring_routeset, transit_network, max_route_length))
 			continue;
@@ -50,7 +51,7 @@ void seamo_iterate(Individual *population_array, int population_size, Graph &tra
 			continue;
 		}
 		if (offspring.fitness.first < best_so_far[0]) {
-			if (best_so_far_indices[0] != i) {
+			if (best_so_far_indices[1] != i) {
 				dominated[i] = 1;
 				new_generation[i] = offspring;
 				continue;
@@ -62,7 +63,7 @@ void seamo_iterate(Individual *population_array, int population_size, Graph &tra
 			}
 		}
 		if (offspring.fitness.second< best_so_far[1]) {
-			if (best_so_far_indices[1] != i) {
+			if (best_so_far_indices[0] != i) {
 				dominated[i] = 1;
 				new_generation[i] = offspring;
 				continue;
@@ -77,7 +78,7 @@ void seamo_iterate(Individual *population_array, int population_size, Graph &tra
 			continue;
 		else
 			for (int k = 0; k < population_size; k++) {
-				if (dominated[k])
+				if (dominated[k]==1)
 					continue;
 				if (dominates(offspring, population_array[k])) {
 					dominated[k] = 1;
@@ -85,11 +86,14 @@ void seamo_iterate(Individual *population_array, int population_size, Graph &tra
 					continue;
 				}
 			}
-		for (int k = 0; k < population_size; k++)
-			if (dominated[k])
-				population_array[k] = new_generation[k];
-
 	}
+	for (int k = 0; k < population_size; k++)
+		if (dominated[k] == 1)
+			population_array[k] = new_generation[k];
+	int n_new_offspring = 0;
+	for (int i = 0; i < population_size; i++)
+		n_new_offspring += dominated[i];
+	std::cout << n_new_offspring << "\n";
 	delete[] dominated;
 	delete[] new_generation;
 }

@@ -6,11 +6,12 @@
 #include<string>
 #include<sstream>
 #include<cstdlib>
+#include<ctime>
 
 #define DISTANCES_MAT_PATH "C:\\Users\\eltay\\Documents\\grad_project\\Mumford_UTRP\\CEC2013Supp\\Instances\\MandlTravelTimes.txt"
 #define DEMAND_MAT_PATH "C:\\Users\\eltay\\Documents\\grad_project\\Mumford_UTRP\\CEC2013Supp\\Instances\\MandlDemand.txt"
 int main() {
-	srand(685);
+	srand(time(NULL));
 	std::ifstream distances_file(DISTANCES_MAT_PATH);
 	std::ifstream demand_file(DEMAND_MAT_PATH);
 	std::string line;
@@ -58,11 +59,11 @@ int main() {
 			}	
 			getline(demand_file, line); // get the empty line
 		}
-		int population_size = 200, min_route_length = 2, max_route_length = 8, n_routes = 6;
+		int population_size = 200, min_route_length = 2, max_route_length = 8, n_routes = 8;
 		Individual *population = new Individual[population_size];
 		//RouteSet rs = generate_random_routeset(transit_network, min_route_length, max_route_length, n_routes);
 		seed_population(population, population_size, transit_network, min_route_length, max_route_length, n_routes, demand_matrix);
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 200; i++) {
 			seamo_iterate(population, population_size, transit_network, min_route_length, max_route_length, n_routes, demand_matrix);
 			std::cout << "Generation :" << i << "\n";
 		}
