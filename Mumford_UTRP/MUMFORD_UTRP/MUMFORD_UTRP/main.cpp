@@ -59,7 +59,7 @@ int main() {
 			}	
 			getline(demand_file, line); // get the empty line
 		}
-		int population_size = 200, min_route_length = 2, max_route_length = 8, n_routes = 8;
+		int population_size = 200, min_route_length = 2, max_route_length = 8, n_routes = 6;
 		Individual *population = new Individual[population_size];
 		//RouteSet rs = generate_random_routeset(transit_network, min_route_length, max_route_length, n_routes);
 		seed_population(population, population_size, transit_network, min_route_length, max_route_length, n_routes, demand_matrix);

@@ -39,7 +39,7 @@ void seamo_iterate(Individual *population_array, int population_size, Graph &tra
 			continue;
 		mutate(offspring_routeset, transit_network, min_route_length, max_route_length);
 		Individual offspring = { offspring_routeset, fitness(offspring_routeset, transit_network,demand) };
-		//if is duplicate continue
+		//if is duplicate continue TODO
 		if (dominates(offspring, population_array[i])) {
 			dominated[i] = 1;
 			new_generation[i] = offspring;

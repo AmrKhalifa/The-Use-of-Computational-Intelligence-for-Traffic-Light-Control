@@ -47,7 +47,8 @@ int Graph::size() const
 	return vertices_vec.size();
 }
 
-int Vertex::counter = 0;
+
+
 Vertex::Vertex(int serial_number)
 {
 	serial = serial_number;

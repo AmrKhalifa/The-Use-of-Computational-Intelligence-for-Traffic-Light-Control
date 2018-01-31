@@ -23,7 +23,6 @@ public:
 class Vertex
 {
 private:
-	static int counter;
 	int serial;
 	std::vector<Edge*> edges_vec;
 public:
