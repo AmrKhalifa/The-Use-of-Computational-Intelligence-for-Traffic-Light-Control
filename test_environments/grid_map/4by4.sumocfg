@@ -1,0 +1,11 @@
+<configuration>
+	<input>
+		<net-file value="4by4.net.xml" />
+		<route-files value="4by4.rou.xml" />
+	</input>
+	<time>
+		<begin value="0" />
+		<end value="10000" />
+	</time>
+</configuration>
+
