@@ -2,3 +2,6 @@ Debug/
 .vs/
 .idea
 *.pyc
+Release
+*.vspx
+*.psess
