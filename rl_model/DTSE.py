@@ -11,7 +11,6 @@ class DTSE_Generator:
 		vehicles_speed = np.zeros(state_size)
 		road_length = traci.lane.getLength(road) 
 		
-
 		for v in vehicles :
 			if direction == "in":
 				v_position = abs(road_length-int (traci.vehicle.getLanePosition(v)))
