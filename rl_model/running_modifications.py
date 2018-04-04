@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -8,7 +7,8 @@ import optparse
 import subprocess
 import traci
 import numpy as np
-import DTSE as dtse
+import dtse as dtse
+import action as ac
 #importing python modules from the $SUMO_HOME/tools directory
 
 try:
@@ -42,14 +42,24 @@ def get_data ():
 	s,p = dtse.DTSE_Generator.get_traffic_lights_state("node1")
 	print(s)
 	print(p)
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////
 def run():
     step =0
+    ac.PhaseModifier.change_to_phase("node1",0)
     while (step != 10000):
         traci.simulationStep()
         step += 1
-        get_data()
+        #get_data()
+        if(step ==2500):
+            ac.PhaseModifier.change_to_phase("node1",1)
+        if(step ==5000):
+            ac.PhaseModifier.change_to_phase("node1",2)
+        if(step ==7500):
+            ac.PhaseModifier.change_to_phase("node1",3) 
+
     traci.close()
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # this is the main entry point of this script
@@ -65,4 +75,3 @@ if __name__ == "__main__":
                              "--tripinfo-output", "tripinfo.xml"],)
     
     run()
-
