@@ -1,5 +1,6 @@
 import traci
-
+import time
+import abc
 
 class Simulator:
     def __init__(self):
@@ -20,6 +21,7 @@ class Simulator:
         self._sim_step += 1
 
     def run(self, path_to_cfg, time_steps ,gui=False):
+        start_time = time.time()
         if gui:
             sumoBinary = "sumo-gui"
         else:
@@ -34,6 +36,7 @@ class Simulator:
         for component in self._sim_components:
             component.post_run()
         traci.close()
+        print("Runtime: %.3f"%(time.time()-start_time))
 
     def add_tickable(self, tickable, freq=1):
         self._tickables.append(tickable)
@@ -46,3 +49,16 @@ class Simulator:
         component = Component(*args, **kwargs)
         self._sim_components.append(component)
         self._tick_freq[component] = freq
+
+
+
+class Tickable(abc.ABCMeta):
+    @abc.abstractmethod
+    def tick(self):
+        pass
+
+
+class SimulationComponent(Tickable):
+    @abc.abstractmethod
+    def post_run(self):
+        pass
