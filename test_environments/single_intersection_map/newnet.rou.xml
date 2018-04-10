@@ -7,9 +7,10 @@
   <vType accel="1.0" decel="5.0" id="CarC" length="5.0" minGap="2.5" maxSpeed="100.0" sigma="0.9" />
   <vType accel="1.0" decel="5.0" id="CarD" length="5.5" minGap="2.5" maxSpeed="100.0" sigma="0.9" />
   
-  <route id="route01" edges="-road1"/>
+ 
   <route id="route02" edges="-road1	-road2"/>
   <route id="route03" edges="-road1 -road3"/>
+  
 
   <flow id="type1" color="1,1,0"  begin="45000" end= "600000" period="20" type="CarA">
     <route edges="-road1 -road3"/>
@@ -26,6 +27,40 @@
 	
 	<flow id="type4" color="1,1,0"  begin="45000" end= "600000" period="20" type="CarA">
     <route edges="road2 -road4"/>
+	</flow>
+	
+	<flow id="type5" color="1,1,0"  begin="45000" end= "600000" period="20" type="CarA">
+    <route edges="-road1 -road2"/>
+	</flow>
+	
+  <flow id="type6" color="1,0,0"  begin="45000" end= "600000" period="20" type="CarB">
+    <route edges="-road1 -road4"/>
+	</flow>
+  
+ <flow id="type7" color="1,0,0"  begin="45000" end= "600000" period="20" type="CarB">
+    <route edges="road2 road1"/>
+	</flow>
+	
+	
+	<flow id="type8" color="1,1,0"  begin="45000" end= "600000" period="20" type="CarA">
+    <route edges="road4 road1"/>
+	</flow>
+	
+	<flow id="type9" color="1,1,0"  begin="45000" end= "600000" period="20" type="CarA">
+    <route edges="road4 -road3"/>
+	</flow>
+	
+  <flow id="type10" color="1,0,0"  begin="45000" end= "600000" period="20" type="CarB">
+    <route edges="road2 -road3"/>
+	</flow>
+  
+ <flow id="type11" color="1,0,0"  begin="45000" end= "600000" period="20" type="CarB">
+    <route edges="road3 -road2"/>
+	</flow>
+	
+	
+	<flow id="type12" color="1,1,0"  begin="45000" end= "600000" period="20" type="CarA">
+    <route edges="road3 -road4"/>
 	</flow>
 
 </routes>
