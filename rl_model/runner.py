@@ -1,23 +1,9 @@
-import os, sys
-
-if 'SUMO_HOME' in os.environ:
-    tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
-    sys.path.append(tools)
-else:
-    sys.exit("please declare environment variable 'SUMO_HOME'")
-
-sumoBinary = "sumo"
-sumoCmd = [sumoBinary, "-c", "..\\test_environments\\grid_map\\4by4.sumocfg"]
-
-import traci
 from reward import RewardCalculator
+from simulation import Simulator
 
+sim = Simulator()
 rc = RewardCalculator()
-traci.start(sumoCmd)
-step = 0
-while step < 10000:
-    traci.simulationStep()
-    rc.tick()
-    rc.get_reward()
+#sim.add_tickable(rc)
 
-traci.close()
+sim.run("..\\test_environments\\single_intersection_map\\newnet.sumocfg", time_steps=1000, gui=False)
+
