@@ -16,7 +16,7 @@ class Simulator:
             if self._sim_step % self._tick_freq[tickable] == 0:
                 tickable.tick()
         for component in self._sim_components:
-            if self._sim_step % self._tick_freq[component]:
+            if self._sim_step % self._tick_freq[component] == 0:
                 component.tick()
         self._sim_step += 1
 
@@ -52,7 +52,7 @@ class Simulator:
 
 
 
-class Tickable(abc.ABCMeta):
+class Tickable:
     @abc.abstractmethod
     def tick(self):
         pass
