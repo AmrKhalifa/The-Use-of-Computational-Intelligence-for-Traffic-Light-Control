@@ -6,7 +6,7 @@
         <route-files value="newnet.rou.xml"/>
     </input>
     <time>
-        <begin value="0000"/>
+        <begin value="0" />
         <end value="100000"/>
     </time>
     <time-to-teleport value="-1"/>

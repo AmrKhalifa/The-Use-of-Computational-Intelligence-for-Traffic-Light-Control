@@ -1,6 +1,6 @@
 from xml.dom import minidom
 
-class XmlDataExtractor(object):
+class XMLDataExtractor(object):
 
 	def __init__(self,path_to_file):
 		self.meanJtime = 0
