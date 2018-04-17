@@ -1,6 +1,9 @@
 import traci 
 
-class PhaseModifier:
 
-	def change_to_phase(junctionID,phase):
-		traci.trafficlights.setPhase(str(junctionID), phase)
+class PhaseModifier:
+    def __init__(self, junctionID):
+        self._junction_id = junctionID
+
+    def set_phase(self,phase):
+        traci.trafficlights.setPhase(self._junction_id, phase)
