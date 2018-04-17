@@ -48,17 +48,17 @@ def get_data ():
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////
 def run():
     step =0
-    ac.PhaseModifier.change_to_phase("node1",0)
+   # ac.PhaseModifier.change_to_phase("node1",0)
     while (step != 10000):
         traci.simulationStep()
         step += 1
-        #get_data()
-        if(step ==2500):
-            ac.PhaseModifier.change_to_phase("node1",1)
-        if(step ==5000):
-            ac.PhaseModifier.change_to_phase("node1",2)
-        if(step ==7500):
-            ac.PhaseModifier.change_to_phase("node1",3) 
+        get_data()
+        # if(step ==2500):
+        #     ac.PhaseModifier.change_to_phase("node1",1)
+        # if(step ==5000):
+        #     ac.PhaseModifier.change_to_phase("node1",2)
+        # if(step ==7500):
+        #     ac.PhaseModifier.change_to_phase("node1",3)
 
     traci.close()
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

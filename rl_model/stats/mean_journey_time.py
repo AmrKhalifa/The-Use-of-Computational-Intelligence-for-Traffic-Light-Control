@@ -12,7 +12,7 @@ class OverallMeanJourneyTimeRecorder(SimulationComponent):
       
     def post_run(self):
 
-        self.mean_journey_time = XMLDataExtractor("D:/My study/5th year/Graduation Project/traffic-optimization/rl_model/tripinfo.xml").get_data()
+        self.mean_journey_time = XMLDataExtractor("tripinfo.xml").get_data()
         print("*="*10)
         print("the mean Journey time is: ", self.mean_journey_time)
         pass
