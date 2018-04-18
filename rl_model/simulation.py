@@ -9,7 +9,7 @@ class Simulator:
         self._sim_components = []
         self._tick_freq = {}
         self._sim_step = 0
-
+        self.results = {}
     def tick(self):
         traci.simulationStep()
         for tickable in self._tickables:
@@ -51,7 +51,7 @@ class Simulator:
         self._post_run_funcs.append(func)
 
     def add_simulation_component(self, Component, freq=1, *args, **kwargs):
-        component = Component(*args, **kwargs)
+        component = Component(self, *args, **kwargs)
         self._sim_components.append(component)
         self._tick_freq[component] = freq
 

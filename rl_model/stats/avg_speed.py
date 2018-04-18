@@ -1,10 +1,11 @@
 from simulation import SimulationComponent
-import matplotlib.pyplot as plt
+import numpy as np
 import traci
 
 class OverallAverageSpeedRecorder(SimulationComponent):
-    def __init__(self):
+    def __init__(self, simulation):
         self._speeds = []
+        self._simulation = simulation
 
     def tick(self):
         avg = 0
@@ -18,5 +19,4 @@ class OverallAverageSpeedRecorder(SimulationComponent):
 
 
     def post_run(self):
-        plt.plot(self._speeds)
-        #plt.show()
+        self._simulation.results["avg_speed"] = np.asarray(self._speeds)
