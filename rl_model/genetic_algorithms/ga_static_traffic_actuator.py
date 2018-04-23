@@ -2,7 +2,8 @@ import traci
 import rl_model.action as ac
 import numpy as np
 
-class StaticTrafficLightAcuator:
+
+class StaticTrafficLightActuator:
     def __init__(self,chromosome,simulation_time):
 
         self._chromosome = chromosome
@@ -15,17 +16,13 @@ class StaticTrafficLightAcuator:
         pass
 
     def tick(self):
-        #print("This Chromosome info are : ")
-   
         phase = traci.trafficlights.getPhase("node1")
-        #print("the current phase is : ",phase)
-        #print("the phases list is : ", self._phase_array)
         mylist = self._phases_list
         modifier = ac.PhaseModifier("node1")
 
         if(self._counter >= 0 and self._counter<self._phase_array[0]):
            modifier.set_phase(0)
-           #print("the counter count is :", self._counter)
+
         elif (self._counter >= self._phase_array[0] and self._counter < self._phase_array[1]):
             modifier.set_phase(1)
             #print("the counter count is :", self._counter)
