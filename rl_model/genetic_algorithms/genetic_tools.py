@@ -34,7 +34,10 @@ class GAOpertations(object):
         if(plus_minus):
             mutated_chromosome[mutation_position] += 10
         else:
-            mutated_chromosome[mutation_position] -= 10
+            if(mutated_chromosome[mutation_position] >10 ):
+                mutated_chromosome[mutation_position]-= 10
+            else :
+                mutated_chromosome[mutation_position] = 0
 
         return Chromosome(mutated_chromosome,fitness=0)
 
