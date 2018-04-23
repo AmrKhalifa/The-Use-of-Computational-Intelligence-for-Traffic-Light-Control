@@ -1,7 +1,7 @@
-from simulation import Simulator
-from stats import OverallAverageSpeedRecorder
-from action import PhaseModifier
-from static_controller import StaticTrafficLightController
+from rl_model.simulation import Simulator
+from rl_model.stats import OverallAverageSpeedRecorder
+from rl_model.action import PhaseModifier
+from rl_model.gradient_descent.static_controller import StaticTrafficLightController
 import matplotlib.pyplot as plt
 import random
 

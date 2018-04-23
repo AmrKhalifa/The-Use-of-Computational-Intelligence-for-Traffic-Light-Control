@@ -1,9 +1,10 @@
-from simulation import SimulationComponent
+from rl_model.simulation import SimulationComponent
 import matplotlib.pyplot as plt
 import traci
-from utils.tripinfo import XMLDataExtractor
+from rl_model.utils.tripinfo import XMLDataExtractor
 
 class OverallMeanJourneyTimeRecorder(SimulationComponent):
+    
     def __init__(self):
        self.mean_journey_time =0
 
@@ -15,4 +16,5 @@ class OverallMeanJourneyTimeRecorder(SimulationComponent):
         self.mean_journey_time = XMLDataExtractor("D:/My study/5th year/Graduation Project/traffic-optimization/rl_model/tripinfo.xml").get_data()
         print("*="*10)
         print("the mean Journey time is: ", self.mean_journey_time)
+        return self.mean_journey_time 
         pass

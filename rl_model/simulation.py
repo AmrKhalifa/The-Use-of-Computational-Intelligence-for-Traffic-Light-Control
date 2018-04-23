@@ -31,6 +31,7 @@ class Simulator:
         sumoCmd.append("--tripinfo-output")
         sumoCmd.append("tripinfo.xml")
 
+
         traci.start(sumoCmd)
         
         while self._sim_step < time_steps:

@@ -12,7 +12,7 @@ class XMLDataExtractor(object):
             tripinfo_list = xmldoc.getElementsByTagName("tripinfo")
             accumlated_JTime =0
             for i,tripinfo in enumerate(tripinfo_list):
-                accumlated_JTime += (float(tripinfo.getAttribute("duration")))
+                accumlated_JTime += (float(tripinfo.getAttribute("timeLoss")))
 
             meanJtime = accumlated_JTime/i
             return meanJtime

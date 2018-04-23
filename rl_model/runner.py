@@ -8,7 +8,7 @@ sim = Simulator()
 #rc = RewardCalculator()
 #sim.add_tickable(rc)
 #sim.add_simulation_component(OverallAverageSpeedRecorder)
-sim.add_simulation_component(OverallMeanJourneyTimeRecorder)
+#sim.add_simulation_component(OverallMeanJourneyTimeRecorder)
 
 sumocfg1 = "..\\test_environments\\single_intersection_map\\newnet.sumocfg"
 sumocfg2 = "..\\test_environments\\grid_map\\4by4.sumocfg"
