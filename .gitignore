@@ -5,3 +5,5 @@ Debug/
 Release
 *.vspx
 *.psess
+__pycache__
+tripinfo.xml
