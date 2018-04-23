@@ -15,8 +15,11 @@ class RewardCalculator:
         for vehID in current_vehicle_ids:
             if vehID not in self.vehicles.keys():
                 self.vehicles[vehID] = 0
+        for vehID in traci.simulation.getDepartedIDList():
+            traci.vehicle.subscribe(vehID, [traci.constants.VAR_SPEED])
+        subscription_results = traci.vehicle.getSubscriptionResults()
         for vehID in current_vehicle_ids:
-            speed = traci.vehicle.getSpeed(vehID)
+            speed = subscription_results[vehID][traci.constants.VAR_SPEED]
             if speed < EPS:
                 self.vehicles[vehID] += 1
             else:
