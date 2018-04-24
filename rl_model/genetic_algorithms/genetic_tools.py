@@ -1,5 +1,6 @@
 import random
 
+
 class Chromosome(object):
     def __init__(self, phases_steps,fitness):
         self._phases_steps = phases_steps
@@ -17,6 +18,7 @@ class GAOpertations(object):
         pass
 
     def corssover(self,first_chromosome,second_chromosome):
+    	
         portion = random.randint(0,7)
         first_part = first_chromosome._phases_steps[:portion]
         second_part = second_chromosome._phases_steps[portion:]
