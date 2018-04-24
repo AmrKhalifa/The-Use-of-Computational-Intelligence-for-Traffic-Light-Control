@@ -1,5 +1,5 @@
 import traci
-import rl_model.action as ac
+import action as ac
 import numpy as np
 
 
