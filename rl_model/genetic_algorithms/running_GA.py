@@ -1,15 +1,15 @@
-from rl_model.simulation import Simulator
-from rl_model.genetic_algorithms.genetic_tools import Chromosome
-from rl_model.genetic_algorithms.ga_static_traffic_actuator import StaticTrafficLightActuator
-from rl_model.genetic_algorithms.tripinfo_extract import XMLDataExtractor
-from rl_model.genetic_algorithms.genetic_tools import GAOpertations
+from simulation import Simulator
+from genetic_algorithms.genetic_tools import Chromosome
+from genetic_algorithms.ga_static_traffic_actuator import StaticTrafficLightActuator
+from genetic_algorithms.tripinfo_extract import XMLDataExtractor
+from genetic_algorithms.genetic_tools import GAOpertations
 import traci
 import random
 import matplotlib.pyplot as plt
 import time
 
 sumocfg1 = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
-path = "D:\My study\\5th year\\Graduation Project\\traffic-optimization\\rl_model\\genetic_algorithms\\tripinfo.xml"
+path = "tripinfo.xml"
 fitness_list = []
 
 # ///////////////////////// initializing the population ///////////////////////////////////
