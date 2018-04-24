@@ -5,7 +5,9 @@ from stats.output_parser import SimulationOutputParser
 
 
 sim = Simulator()
+
 sim.add_simulation_component(SimulationOutputParser)
+
 
 
 sumocfg1 = "..\\test_environments\\single_intersection_map\\newnet.sumocfg"
