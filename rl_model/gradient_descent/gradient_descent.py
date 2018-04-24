@@ -5,10 +5,13 @@ from static_controller import StaticTrafficLightController
 import matplotlib.pyplot as plt
 import random
 
+
 sumocfg1 = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
 sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
 previous_objective = -1
-timing = [30, 3, 30, 3]
+timing = [30, 2, 30, 2]
+
+
 def mutate_timing(timing, magnitue):
     n = len(timing)
     timing_to_modify = random.randrange(0,n)
@@ -31,6 +34,7 @@ for i in range(100):
         timing = new_timings
         previous_objective = objective
     objective_history.append(previous_objective)
+
 print (timing)
 plt.plot(objective_history)
 plt.show()

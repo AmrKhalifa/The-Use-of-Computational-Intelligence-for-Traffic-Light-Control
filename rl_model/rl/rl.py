@@ -11,8 +11,8 @@ class StateGenerator:
     def get_state(self):
         # TODO add traffic light phase to state
         state = np.array(())
-        for lane in ("-road1_0", "road2_0", "road3_0", "road4_0"):
-            a, b = dtse.DTSE_Generator.get_traffic_state("-road4_0", "out", 15, 5)
+        for lane,direction in zip(("-road1_0", "road2_0", "road3_0", "road4_0"), ("in", "in", "in", "in")):
+            a, b = dtse.DTSE_Generator.get_traffic_state(lane, direction, 15, 5)
             a, b = np.asarray(a), np.asarray(b)
             state = np.hstack((state, a.ravel(), b.ravel()))
         return state
@@ -51,6 +51,14 @@ class RLAgent:
 
 
 if __name__ == "__main__":
+    class X:
+        def __init__(self,s):
+            self.x = 0
+            self.s = s
+
+        def tick(self):
+            print(s.get_state())
+
     sim = Simulator()
     rc = RewardCalculator()
     sim.add_tickable(rc)
@@ -59,5 +67,5 @@ if __name__ == "__main__":
     agent = RLAgent(rc,s,c,[0,3,4])
     sim.add_tickable(agent)
     sumocfg = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
-    sim.run(sumocfg, time_steps=100, gui=True)
+    sim.run(sumocfg, time_steps=1000, gui=True)
 

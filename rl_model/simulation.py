@@ -1,5 +1,6 @@
 import traci
 import time
+import pickle
 import abc
 
 class Simulator:
@@ -10,6 +11,7 @@ class Simulator:
         self._tick_freq = {}
         self._sim_step = 0
         self.results = {}
+        self.output_file = "tripinfo.xml"
     def tick(self):
         traci.simulationStep()
         for tickable in self._tickables:
@@ -29,19 +31,20 @@ class Simulator:
         sumoCmd = [sumoBinary, "-c"]
         sumoCmd.append(path_to_cfg)
         sumoCmd.append("--tripinfo-output")
-        sumoCmd.append("tripinfo.xml")
+        sumoCmd.append(self.output_file)
 
         traci.start(sumoCmd)
-        
+
         while self._sim_step < time_steps:
             self.tick()
+
+        traci.close()
         for func in self._post_run_funcs:
             func()
         for component in self._sim_components:
-            traci.close()
-            print("Runtime: %.3f"%(time.time()-start_time))
             component.post_run()
-        
+        print("Runtime: %.3f"%(time.time()-start_time))
+
 
     def add_tickable(self, tickable, freq=1):
         self._tickables.append(tickable)
@@ -55,7 +58,10 @@ class Simulator:
         self._sim_components.append(component)
         self._tick_freq[component] = freq
 
-
+    def save_results(self, filename):
+        file_io = open(filename + ".pkl", 'wb')
+        results = pickle.dump(self.results, file_io)
+        file_io.close()
 
 class Tickable:
     @abc.abstractmethod
