@@ -7,3 +7,5 @@ Release
 *.psess
 __pycache__
 tripinfo.xml
+* .pkl
+*.csv 
