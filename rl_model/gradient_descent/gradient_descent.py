@@ -1,5 +1,5 @@
 from simulation import Simulator
-from stats import SimulationOutputParser, OverallAverageSpeedRecorder
+from stats import SimulationOutputParser
 from action import PhaseModifier
 from static_controller import StaticTrafficLightController
 import numpy as np
@@ -19,21 +19,19 @@ def evaluate_timing(timing):
     traffic_light = PhaseModifier("node1")
     controller = StaticTrafficLightController(controller=traffic_light, sequence=[4,3,0,3], timings=timing)
     sim = Simulator()
-    sim.add_simulation_component(OverallAverageSpeedRecorder)
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(controller)
-    sim.run(sumocfg1, gui=True)
-    objective = sim.results["mean_speed"].mean()
-    print(objective, np.array(sim.results["avg_speed"]).mean())
+    sim.run(sumocfg1, gui=False)
+    objective = sim.results["waiting_time"].mean()
     return objective
 
 
 def OI(old_objective, new_objective):
-    return new_objective > old_objective
+    return new_objective < old_objective
 
 
 def IE(old_objective, new_objective):
-    return new_objective >= old_objective
+    return new_objective <= old_objective
 
 def llh(h, timing):
     if h==0:
