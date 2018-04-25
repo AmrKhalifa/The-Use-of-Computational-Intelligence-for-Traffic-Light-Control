@@ -43,15 +43,14 @@ def concat_frames(f1,f2):
     return frame
 
 
-def save_dataframe2CSV(f1,index,file):
-    f1.set_index(index, inplace=True)
+def save_dataframe2CSV(f1,file):
     f1.to_csv(file)
 
 # ///////////////////////// initializing the population ///////////////////////////////////
 
 time1 = time.time()
 timing_list = []
-for _ in range(5):
+for _ in range(2):
     timing_list.append(random.sample(range(1, 200), 8))
 #simulation_time = 1000
 
@@ -85,14 +84,14 @@ for timing in timing_list:
 simulation_dataFrame = define_data_frame()
 
 print(" performing genetic algorithm ....")
-for i in range (0,4):
+for i in range (1):
     print("iteration : ",i)
     ga_operator = GAOpertations()
 
     # crossover #
 
-    rand1 = random.randint(0,4)
-    rand2 = random.randint(0,4)
+    rand1 = random.randint(0,1)
+    rand2 = random.randint(0,1)
     offspring = ga_operator.corssover(population[rand1],population[rand2])
     #print("an offspring is born ")
     #print(offspring.get_data())
@@ -146,7 +145,7 @@ plt.show()
 print("="*10)
 print("iteration were performed in: ",time2-time1," seconds.")
 
-save_dataframe2CSV(simulation_dataFrame,"iteration","ga_results.csv")
+save_dataframe2CSV(simulation_dataFrame,"ga_results.csv")
 
 print(simulation_dataFrame.head())
 # /////////////////////////////////////////////////////////////////////
