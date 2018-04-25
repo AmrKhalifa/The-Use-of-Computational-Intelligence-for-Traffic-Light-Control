@@ -22,7 +22,7 @@ class Simulator:
                 component.tick()
         self._sim_step += 1
 
-    def run(self, path_to_cfg, time_steps ,gui=False):
+    def run(self, path_to_cfg, time_steps="run_to_completion" ,gui=False):
         start_time = time.time()
         if gui:
             sumoBinary = "sumo-gui"
@@ -35,10 +35,12 @@ class Simulator:
 
 
         traci.start(sumoCmd)
-
-        while self._sim_step < time_steps:
-            self.tick()
-
+        if time_steps == "run_to_completion":
+            while traci.simulation.getMinExpectedNumber() > 0 :
+                self.tick()
+        else:
+            while self._sim_step < time_steps and traci.simulation.getMinExpectedNumber() > 0:
+                self.tick()
         traci.close()
         for func in self._post_run_funcs:
             func()

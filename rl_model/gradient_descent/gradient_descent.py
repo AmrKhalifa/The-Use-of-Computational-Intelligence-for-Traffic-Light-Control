@@ -1,12 +1,13 @@
 from simulation import Simulator
-from stats import SimulationOutputParser
+from stats import SimulationOutputParser, OverallAverageSpeedRecorder
 from action import PhaseModifier
 from static_controller import StaticTrafficLightController
+import numpy as np
 import matplotlib.pyplot as plt
 import random
 
 
-sumocfg1 = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
+sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
 sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
 
 
@@ -18,10 +19,12 @@ def evaluate_timing(timing):
     traffic_light = PhaseModifier("node1")
     controller = StaticTrafficLightController(controller=traffic_light, sequence=[4,3,0,3], timings=timing)
     sim = Simulator()
+    sim.add_simulation_component(OverallAverageSpeedRecorder)
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(controller)
-    sim.run(sumocfg1, time_steps=1000, gui=False)
+    sim.run(sumocfg1, gui=True)
     objective = sim.results["mean_speed"].mean()
+    print(objective, np.array(sim.results["avg_speed"]).mean())
     return objective
 
 
@@ -81,10 +84,9 @@ def mutate_timings4(timings):
     new_timings[a], new_timings[b] = new_timings[b], new_timings[a]
     return new_timings
 
-objective_history = []
 current_timing = initial_timings()
 previous_objective = evaluate_timing(current_timing)
-
+objective_history = [previous_objective]
 for i in range(10):
     h = random.randrange(4)
     new_timings = llh(h, current_timing)

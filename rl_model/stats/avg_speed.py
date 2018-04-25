@@ -14,7 +14,9 @@ class OverallAverageSpeedRecorder(SimulationComponent):
         velocities = traci.vehicle.getSubscriptionResults()
         for i in velocities.values():
             avg += i[traci.constants.VAR_SPEED]
-        avg/=traci.vehicle.getIDCount()
+        vehicle_count = traci.vehicle.getIDCount()
+        if vehicle_count != 0:
+            avg/= vehicle_count
         self._speeds.append(avg)
 
 
