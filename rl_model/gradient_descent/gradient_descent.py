@@ -52,6 +52,7 @@ def mutate_timing(timings, magnitude):
 
 
 def mutate_timings2(timings, magnitude):
+
     n = len(timings)
     result = timings[:]
     for i in range(2):
@@ -96,4 +97,3 @@ for i in range(10):
 print (current_timing)
 plt.plot(objective_history)
 plt.show()
-

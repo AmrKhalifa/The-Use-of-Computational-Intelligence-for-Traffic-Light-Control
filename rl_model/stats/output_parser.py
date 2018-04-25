@@ -1,6 +1,6 @@
 from simulation import SimulationComponent
 from xml.dom import minidom
-
+import numpy as np
 
 class SimulationOutputParser (SimulationComponent):
     def __init__(self, simulation):
@@ -15,7 +15,7 @@ class SimulationOutputParser (SimulationComponent):
         xmldoc = minidom.parse(self._simulation.output_file)
         tripinfo_list = xmldoc.getElementsByTagName("tripinfo")
         for entry in tripinfo_list:
-            duration = float(entry.getAttribute("arrival")) - float(entry.getAttribute("depart"))
+            duration = float(entry.getAttribute("duration"))
             mean_speed = float(entry.getAttribute("routeLength"))/duration
             results["mean_speed"].append(mean_speed)
             results["duration"].append(duration)
@@ -23,4 +23,4 @@ class SimulationOutputParser (SimulationComponent):
             results["time_loss"].append(float(entry.getAttribute("timeLoss")))
 
         for category, values in results.items():
-            self._simulation.results [category] = values
+            self._simulation.results [category] = np.array(values)

@@ -7,6 +7,8 @@ import traci
 import random
 import matplotlib.pyplot as plt
 import time
+from stats.output_parser import SimulationOutputParser
+import pandas as pd
 
 sumocfg1 = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
 path = "tripinfo.xml"
@@ -30,6 +32,8 @@ for timing in timing_list:
 
     sim = Simulator()
     sim.add_tickable(chromosome_controller)
+    parser = SimulationOutputParser(sim)
+    sim.add_simulation_component(SimulationOutputParser)
     sim.run(sumocfg1, time_steps=simulation_time, gui=False)
     traci.close()
 
@@ -47,7 +51,7 @@ print("*="*15)
 
 # ///////////////////////////// carrying out GA operations /////////////////////////////
 print(" performing genetic algorithm ....")
-for i in range (1000):
+for i in range (10):
     print("iteration : ",i)
     ga_operator = GAOpertations()
 
@@ -69,8 +73,11 @@ for i in range (1000):
 
     offspring_chromosome_controller = StaticTrafficLightActuator(mutated_offspring , simulation_time)
     sim = Simulator()
+    parser = SimulationOutputParser(sim)
+    sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(offspring_chromosome_controller)
     sim.run(sumocfg1, time_steps=simulation_time, gui=False)
+    sim.save_results("single_iteration_result")
     traci.close()
     
     fitness = XMLDataExtractor(path).get_data()
@@ -108,5 +115,7 @@ time2 = time.time()
 plt.show()
 print("="*10)
 print("1000 iteration were performed in: ",time2-time1," seconds.")
+
+
 # /////////////////////////////////////////////////////////////////////
 
