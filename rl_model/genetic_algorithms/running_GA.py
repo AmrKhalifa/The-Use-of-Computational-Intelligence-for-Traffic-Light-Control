@@ -64,7 +64,7 @@ for timing in timing_list:
 
     sim = Simulator()
     sim.add_tickable(chromosome_controller)
-    sim.run(sumocfg1, gui=False)
+    sim.run(sumocfg1, gui=False,time_steps=2000)
 
 
 
@@ -84,13 +84,10 @@ for timing in timing_list:
 simulation_dataFrame = define_data_frame()
 
 print(" performing genetic algorithm ....")
-<<<<<<< HEAD
 i = 0
+
 while(i<2):
-=======
-i = 0
-while(i<2):
->>>>>>> genetic_algorithm_all_metrics
+
     print("iteration : ",i)
     ga_operator = GAOpertations()
 
@@ -110,32 +107,19 @@ while(i<2):
 
     # acquiring offspring's fitness #
 
-
     offspring_chromosome_controller = StaticTrafficLightActuator(mutated_offspring)
     sim = Simulator()
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(offspring_chromosome_controller)
-<<<<<<< HEAD
-    if(sim.run(sumocfg1, gui=False)):
+
+    if (sim.run(sumocfg1, gui=False, time_steps=5000)):
         continue
-
-
-
-    mean_speend_result = (np.mean(np.array(sim.results['mean_speed'])))
-    duration_result = (np.mean(np.array(sim.results['duration'])))
-    waiting_time = (np.mean(np.array(sim.results['waiting_time'])))
-    time_loss =(np.mean(np.array(sim.results['time_loss'])))
-=======
-    if (sim.run(sumocfg1, gui=False)):
-        traci.close()
-        continue
->>>>>>> genetic_algorithm_all_metrics
-
 
     mean_speed_result = (np.mean(sim.results['mean_speed']))
     duration_result = (np.mean(sim.results['duration']))
     waiting_time = (np.mean(sim.results['waiting_time']))
     time_loss =(np.mean(sim.results['time_loss']))
+
 
     iteration_dataFrame = generate_iteration_data_frame (i,mean_speed_result,duration_result,waiting_time,time_loss)
 
@@ -156,10 +140,8 @@ while(i<2):
 
     best_solution = min(population,key=lambda x: x._fitness )
     fitness_list.append(best_solution._fitness)
+
     i+=1
-
-
-
 
 print("The fitness list is: ",fitness_list)
 time2 = time.time()
