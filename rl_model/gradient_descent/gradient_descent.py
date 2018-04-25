@@ -45,9 +45,9 @@ def mutate_timing(timing, magnitude):
 
 def mutate_timings2(timings, magnitude):
     n = len(timing)
+    result = timing[:]
     for i in range(2):
         timing_to_modify = random.randrange(0, n)
-        result = timing[:]
         result[timing_to_modify] += random.randrange(-magnitude, magnitude + 1)
         result[timing_to_modify] = max(0, result[timing_to_modify])
     return result
@@ -81,4 +81,3 @@ for i in range(100):
 print (timing)
 plt.plot(objective_history)
 plt.show()
-
