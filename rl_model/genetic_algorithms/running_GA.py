@@ -8,6 +8,8 @@ import random
 import matplotlib.pyplot as plt
 import time
 from stats.output_parser import SimulationOutputParser
+from gradient_descent.static_controller import  StaticTrafficLightController
+from action import PhaseModifier
 import pandas as pd
 import numpy as np
 
@@ -51,7 +53,7 @@ def save_dataframe2CSV(f1,file):
 time1 = time.time()
 timing_list = []
 for _ in range(2):
-    timing_list.append(random.sample(range(1, 200), 8))
+    timing_list.append(random.sample(range(1, 100), 8))
 #simulation_time = 1000
 
 population = []
@@ -60,11 +62,11 @@ population = []
 for timing in timing_list:
 
     chromosome = Chromosome(timing, fitness= 0)
-    chromosome_controller = StaticTrafficLightActuator(chromosome)
+    chromosome_controller = StaticTrafficLightController(PhaseModifier("node1"),list(range(8)),chromosome._phases_steps)
 
     sim = Simulator()
     sim.add_tickable(chromosome_controller)
-    sim.run(sumocfg1, gui=False,time_steps=2000)
+    sim.run(sumocfg1, gui=False,time_steps=5000)
 
 
 
@@ -106,8 +108,7 @@ while(i<2):
     #print(mutated_offspring.get_data())
 
     # acquiring offspring's fitness #
-
-    offspring_chromosome_controller = StaticTrafficLightActuator(mutated_offspring)
+    offspring_chromosome_controller = StaticTrafficLightController(PhaseModifier("node1"),list(range(8)),mutated_offspring._phases_steps)
     sim = Simulator()
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(offspring_chromosome_controller)
