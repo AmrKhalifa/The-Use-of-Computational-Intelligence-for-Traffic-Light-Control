@@ -46,7 +46,7 @@ for timing in timing_list:
     sim.add_tickable(chromosome_controller)
     sim.run(sumocfg1, time_steps=simulation_time, gui=False)
 
-    traci.close()
+
 
     fitness = XMLDataExtractor(path).get_data()
     chromosome.set_fitness(fitness)
@@ -62,7 +62,8 @@ for timing in timing_list:
 
 # ///////////////////////////// carrying out GA operations /////////////////////////////
 print(" performing genetic algorithm ....")
-for i in range (1,1000):
+i =0
+while(i<10):
     print("iteration : ",i)
     ga_operator = GAOpertations()
 
@@ -87,9 +88,10 @@ for i in range (1,1000):
     parser = SimulationOutputParser(sim)
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(offspring_chromosome_controller)
-    sim.run(sumocfg1, time_steps=simulation_time, gui=False)
+    if(sim.run(sumocfg1, time_steps=simulation_time, gui=False)):
+        continue
     sim.save_results("single_iteration_result")
-    traci.close()
+
 
     mean_speend_result = (np.mean(np.array(sim.results['mean_speed'])))
     duration_result = (np.mean(np.array(sim.results['duration'])))
@@ -122,6 +124,7 @@ for i in range (1,1000):
 
     best_solution = min(population,key=lambda x: x._fitness )
     fitness_list.append(best_solution._fitness)
+    i+=1
 
 simulation_dataFrame.set_index('iteration',inplace= True)
 simulation_dataFrame.to_csv("ga_result.csv")
