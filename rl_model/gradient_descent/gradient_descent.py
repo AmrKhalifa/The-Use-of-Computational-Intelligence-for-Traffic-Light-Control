@@ -2,28 +2,27 @@ from simulation import Simulator
 from stats import SimulationOutputParser
 from action import PhaseModifier
 from static_controller import StaticTrafficLightController
-import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+import pickle
 
 sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
 sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
 
 
 def initial_timings():
-    return [30, 3, 30, 3]
+    return [30]*8
 
 
 def evaluate_timing(timing):
     traffic_light = PhaseModifier("node1")
-    controller = StaticTrafficLightController(controller=traffic_light, sequence=[4,3,0,3], timings=timing)
+    controller = StaticTrafficLightController(controller=traffic_light, sequence=list(range(8)), timings=timing)
     sim = Simulator()
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(controller)
     sim.run(sumocfg1, gui=False)
-    objective = sim.results["waiting_time"].mean()
-    return objective
+    return sim.results
 
 
 def OI(old_objective, new_objective):
@@ -53,7 +52,6 @@ def mutate_timing(timings, magnitude):
 
 
 def mutate_timings2(timings, magnitude):
-
     n = len(timings)
     result = timings[:]
     for i in range(2):
@@ -83,17 +81,28 @@ def mutate_timings4(timings):
     return new_timings
 
 current_timing = initial_timings()
-previous_objective = evaluate_timing(current_timing)
-objective_history = [previous_objective]
-for i in range(10):
+results = evaluate_timing(current_timing)
+previous_objective = results["waiting_time"].mean()
+
+metrics = {"mean_speed": [], "duration": [], "waiting_time": [], "time_loss": []}
+improved = {0: 0, 1: 0, 2: 0, 3: 0}
+called = {0: 0, 1: 0, 2: 0, 3: 0}
+
+for i in range(3):
     h = random.randrange(4)
     new_timings = llh(h, current_timing)
-    objective = evaluate_timing(new_timings)
+    new_results = evaluate_timing(new_timings)
+    objective = new_results["duration"].mean()
+    called[h] += 1
     if OI(previous_objective, objective):
+        improved[h] += 1
         current_timing = new_timings
         previous_objective = objective
-    objective_history.append(previous_objective)
+        results = new_results
+    for metric in metrics.keys():
+        metrics[metric].append(results[metric].mean())
 
-print (current_timing)
-plt.plot(objective_history)
+heuristic_report = {"called":called, "improved": improved}
+print (heuristic_report)
+plt.plot(metrics["duration"])
 plt.show()
