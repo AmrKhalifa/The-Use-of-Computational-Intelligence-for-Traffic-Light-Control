@@ -1,4 +1,4 @@
-from rl_model.simulation import SimulationComponent
+from simulation import SimulationComponent
 import numpy as np
 import traci
 
