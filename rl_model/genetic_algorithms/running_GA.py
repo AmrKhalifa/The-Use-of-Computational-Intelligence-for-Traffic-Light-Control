@@ -84,7 +84,8 @@ for timing in timing_list:
 simulation_dataFrame = define_data_frame()
 
 print(" performing genetic algorithm ....")
-for i in range (1):
+i = 0
+while( i < 2):
     print("iteration : ",i)
     ga_operator = GAOpertations()
 
@@ -104,12 +105,15 @@ for i in range (1):
 
     # acquiring offspring's fitness #
 
+
     offspring_chromosome_controller = StaticTrafficLightActuator(mutated_offspring)
     sim = Simulator()
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(offspring_chromosome_controller)
-    sim.run(sumocfg1, gui=False)
-    traci.close()
+    if (sim.run(sumocfg1, gui=False)):
+        traci.close()
+        continue
+
 
     mean_speed_result = (np.mean(sim.results['mean_speed']))
     duration_result = (np.mean(sim.results['duration']))
@@ -135,6 +139,7 @@ for i in range (1):
 
     best_solution = min(population,key=lambda x: x._fitness )
     fitness_list.append(best_solution._fitness)
+
 
 
 
