@@ -63,7 +63,7 @@ for timing in timing_list:
 # ///////////////////////////// carrying out GA operations /////////////////////////////
 print(" performing genetic algorithm ....")
 i =0
-while(i<10):
+while(i<2):
     print("iteration : ",i)
     ga_operator = GAOpertations()
 
