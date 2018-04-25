@@ -9,10 +9,16 @@ import matplotlib.pyplot as plt
 import time
 from stats.output_parser import SimulationOutputParser
 import pandas as pd
+import numpy as np
 
 sumocfg1 = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
 path = "tripinfo.xml"
 fitness_list = []
+mean_speend_result = []
+duration_result =[]
+waiting_time = []
+time_loss = []
+
 
 # ///////////////////////// initializing the population ///////////////////////////////////
 
@@ -23,6 +29,12 @@ for _ in range(10):
 simulation_time = 1000
 
 population = []
+simulation_dataFrame = pd.DataFrame({'iteration': [0],
+                                    'mean_speed': [0],
+                                       'duration': [0],
+                                  'waiting_time': [0],
+                                     'time_loss': [0]})
+simulation_dataFrame.set_index('iteration',inplace= True)
 
  # initializing the chromosomes #
 for timing in timing_list:
@@ -32,26 +44,25 @@ for timing in timing_list:
 
     sim = Simulator()
     sim.add_tickable(chromosome_controller)
-    parser = SimulationOutputParser(sim)
-    sim.add_simulation_component(SimulationOutputParser)
     sim.run(sumocfg1, time_steps=simulation_time, gui=False)
+
     traci.close()
 
     fitness = XMLDataExtractor(path).get_data()
     chromosome.set_fitness(fitness)
     population.append(chromosome)
 
-population.sort(key=lambda x: x._fitness, reverse=True)
-print("the population is initialized ...")
-print(" the population is : ")
-for chromosome in population :
-    print(chromosome._phases_steps)
-    print(chromosome._fitness)
-print("*="*15)
+# population.sort(key=lambda x: x._fitness, reverse=True)
+# print("the population is initialized ...")
+# print(" the population is : ")
+# for chromosome in population :
+#     print(chromosome._phases_steps)
+#     print(chromosome._fitness)
+# print("*="*15)
 
 # ///////////////////////////// carrying out GA operations /////////////////////////////
 print(" performing genetic algorithm ....")
-for i in range (10):
+for i in range (1,1000):
     print("iteration : ",i)
     ga_operator = GAOpertations()
 
@@ -60,14 +71,14 @@ for i in range (10):
     rand1 = random.randint(0,3)
     rand2 = random.randint(0,3)
     offspring = ga_operator.corssover(population[rand1],population[rand2])
-    print("an offspring is born ")
-    print(offspring.get_data())
+    #print("an offspring is born ")
+    #print(offspring.get_data())
 
     # mutation on the offspring #
 
     mutated_offspring = ga_operator.mutate(offspring)
-    print("after mutation , the offspring is: ")
-    print(mutated_offspring.get_data())
+    #print("after mutation , the offspring is: ")
+    #print(mutated_offspring.get_data())
 
     # acquiring offspring's fitness #
 
@@ -79,10 +90,26 @@ for i in range (10):
     sim.run(sumocfg1, time_steps=simulation_time, gui=False)
     sim.save_results("single_iteration_result")
     traci.close()
-    
+
+    mean_speend_result = (np.mean(np.array(sim.results['mean_speed'])))
+    duration_result = (np.mean(np.array(sim.results['duration'])))
+    waiting_time = (np.mean(np.array(sim.results['waiting_time'])))
+    time_loss =(np.mean(np.array(sim.results['time_loss'])))
+
+    iteration_dataFrame = pd.DataFrame(({'iteration': [i],
+                                    'mean_speed': [mean_speend_result],
+                                       'duration': [duration_result],
+                                  'waiting_time': [waiting_time],
+                                     'time_loss': [time_loss]}))
+
+
+    frames = [simulation_dataFrame,iteration_dataFrame]
+    simulation_dataFrame = pd.concat(frames)
+
+
     fitness = XMLDataExtractor(path).get_data()
     mutated_offspring.set_fitness(fitness)
-    print(mutated_offspring.get_data())
+    #print(mutated_offspring.get_data())
     mutated_chromosome_data, mutated_chromosome_fitness = mutated_offspring.get_data()
 
     # survival of the fittest #
@@ -93,29 +120,19 @@ for i in range (10):
             population.append(mutated_offspring)
             break
 
-    # printing the resulting gene pool of this iteration #
-
-    print("*="*10)
-    print("the new population is :")
-    for chromosome in population :
-        print(chromosome._phases_steps)
-        print(chromosome._fitness)
-    best_solution = min(population, key=lambda x: x._fitness)
+    best_solution = min(population,key=lambda x: x._fitness )
     fitness_list.append(best_solution._fitness)
 
-# printing the fittest specimen #
+simulation_dataFrame.set_index('iteration',inplace= True)
+simulation_dataFrame.to_csv("ga_result.csv")
 
-print("="*10)
-print("the best solution is : ")
-best_solution = min(population,key=lambda x: x._fitness )
-print(best_solution.get_data())
-fitness_list.append(best_solution._fitness)
-plt.plot(fitness_list)
+print("The fitness list is: ",fitness_list)
 time2 = time.time()
+plt.plot(fitness_list)
 plt.show()
 print("="*10)
-print("1000 iteration were performed in: ",time2-time1," seconds.")
+print("iteration were performed in: ",time2-time1," seconds.")
 
-
+print(simulation_dataFrame.head())
 # /////////////////////////////////////////////////////////////////////
 
