@@ -41,13 +41,16 @@ class Simulator:
         else:
             while self._sim_step < time_steps and traci.simulation.getMinExpectedNumber() > 0:
                 self.tick()
+
         traci.close()
         for func in self._post_run_funcs:
             func()
         for component in self._sim_components:
             component.post_run()
         print("Runtime: %.3f"%(time.time()-start_time))
-
+        if self._sim_step == time_steps:
+            return True
+        return False
 
     def add_tickable(self, tickable, freq=1):
         self._tickables.append(tickable)

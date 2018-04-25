@@ -4,8 +4,40 @@ from action import PhaseModifier
 from static_controller import StaticTrafficLightController
 import matplotlib.pyplot as plt
 import random
-
+import pandas as pd
 import pickle
+
+# /////////////////////////////////////////////////////////////////////////////////////////
+
+def define_data_frame():
+    simulation_dataFrame = pd.DataFrame({'iteration': [0],
+                                         'mean_speed': [0],
+                                         'duration': [0],
+                                         'waiting_time': [0],
+                                         'time_loss': [0]})
+    simulation_dataFrame.set_index('iteration', inplace=True)
+    return simulation_dataFrame
+
+
+def generate_iteration_data_frame(iteration_no,mean_speed_result,duration_result,waiting_time,time_loss):
+    iteration_dataFrame = pd.DataFrame(({'iteration': [iteration_no],
+                                         'mean_speed': [mean_speed_result],
+                                         'duration': [duration_result],
+                                         'waiting_time': [waiting_time],
+                                         'time_loss': [time_loss]}))
+    iteration_dataFrame.set_index('iteration',inplace= True)
+    return iteration_dataFrame
+
+
+def concat_frames(f1,f2):
+    frames = [f1, f2]
+    frame = pd.concat(frames)
+    return frame
+
+
+def save_dataframe2CSV(f1,index,file):
+    f1.set_index(index, inplace=True)
+    f1.to_csv(file)
 
 sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
 sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
@@ -21,8 +53,9 @@ def evaluate_timing(timing):
     sim = Simulator()
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(controller)
-    sim.run(sumocfg1, gui=False)
-    return sim.results
+    if not sim.run(sumocfg1, gui=False):
+        return sim.results
+    return False
 
 
 def OI(old_objective, new_objective):
@@ -82,16 +115,19 @@ def mutate_timings4(timings):
 
 current_timing = initial_timings()
 results = evaluate_timing(current_timing)
-previous_objective = results["waiting_time"].mean()
+previous_objective = results["duration"].mean()
 
-metrics = {"mean_speed": [], "duration": [], "waiting_time": [], "time_loss": []}
+metrics = define_data_frame()
 improved = {0: 0, 1: 0, 2: 0, 3: 0}
 called = {0: 0, 1: 0, 2: 0, 3: 0}
 
-for i in range(3):
-    h = random.randrange(4)
-    new_timings = llh(h, current_timing)
-    new_results = evaluate_timing(new_timings)
+for i in range(10):
+    new_results = False
+    while not new_results:
+        h = random.randrange(4)
+        new_timings = llh(h, current_timing)
+        new_results = evaluate_timing(new_timings)
+
     objective = new_results["duration"].mean()
     called[h] += 1
     if OI(previous_objective, objective):
@@ -99,9 +135,13 @@ for i in range(3):
         current_timing = new_timings
         previous_objective = objective
         results = new_results
-    for metric in metrics.keys():
-        metrics[metric].append(results[metric].mean())
+    else:
+        print(objective, previous_objective)
+    x = generate_iteration_data_frame(i, results["mean_speed"].mean(), results["duration"].mean(),
+                                  results["waiting_time"].mean(), results["time_loss"].mean())
+    metrics = concat_frames(metrics, x)
 
+print(metrics)
 heuristic_report = {"called":called, "improved": improved}
 print (heuristic_report)
 plt.plot(metrics["duration"])
