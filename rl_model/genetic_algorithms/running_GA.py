@@ -11,40 +11,60 @@ from stats.output_parser import SimulationOutputParser
 import pandas as pd
 import numpy as np
 
-sumocfg1 = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
+sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
 path = "tripinfo.xml"
 fitness_list = []
-mean_speend_result = []
-duration_result =[]
-waiting_time = []
-time_loss = []
 
+# /////////////////////////////////////////////////////////////////////////////////////////
+
+def define_data_frame():
+    simulation_dataFrame = pd.DataFrame({'iteration': [0],
+                                         'mean_speed': [0],
+                                         'duration': [0],
+                                         'waiting_time': [0],
+                                         'time_loss': [0]})
+    simulation_dataFrame.set_index('iteration', inplace=True)
+    return simulation_dataFrame
+
+
+def generate_iteration_data_frame(iteration_no,mean_speed_result,duration_result,waiting_time,time_loss):
+    iteration_dataFrame = pd.DataFrame(({'iteration': [iteration_no],
+                                         'mean_speed': [mean_speed_result],
+                                         'duration': [duration_result],
+                                         'waiting_time': [waiting_time],
+                                         'time_loss': [time_loss]}))
+    iteration_dataFrame.set_index('iteration',inplace= True)
+    return iteration_dataFrame
+
+
+def concat_frames(f1,f2):
+    frames = [f1, f2]
+    frame = pd.concat(frames)
+    return frame
+
+
+def save_dataframe2CSV(f1,file):
+    f1.to_csv(file)
 
 # ///////////////////////// initializing the population ///////////////////////////////////
 
 time1 = time.time()
 timing_list = []
-for _ in range(10):
+for _ in range(2):
     timing_list.append(random.sample(range(1, 200), 8))
-simulation_time = 1000
+#simulation_time = 1000
 
 population = []
-simulation_dataFrame = pd.DataFrame({'iteration': [0],
-                                    'mean_speed': [0],
-                                       'duration': [0],
-                                  'waiting_time': [0],
-                                     'time_loss': [0]})
-simulation_dataFrame.set_index('iteration',inplace= True)
 
  # initializing the chromosomes #
 for timing in timing_list:
 
     chromosome = Chromosome(timing, fitness= 0)
-    chromosome_controller = StaticTrafficLightActuator(chromosome,simulation_time)
+    chromosome_controller = StaticTrafficLightActuator(chromosome)
 
     sim = Simulator()
     sim.add_tickable(chromosome_controller)
-    sim.run(sumocfg1, time_steps=simulation_time, gui=False)
+    sim.run(sumocfg1, gui=False)
 
 
 
@@ -61,16 +81,23 @@ for timing in timing_list:
 # print("*="*15)
 
 # ///////////////////////////// carrying out GA operations /////////////////////////////
+simulation_dataFrame = define_data_frame()
+
 print(" performing genetic algorithm ....")
-i =0
+<<<<<<< HEAD
+i = 0
 while(i<2):
+=======
+i = 0
+while(i<2):
+>>>>>>> genetic_algorithm_all_metrics
     print("iteration : ",i)
     ga_operator = GAOpertations()
 
     # crossover #
 
-    rand1 = random.randint(0,3)
-    rand2 = random.randint(0,3)
+    rand1 = random.randint(0,1)
+    rand2 = random.randint(0,1)
     offspring = ga_operator.corssover(population[rand1],population[rand2])
     #print("an offspring is born ")
     #print(offspring.get_data())
@@ -83,31 +110,36 @@ while(i<2):
 
     # acquiring offspring's fitness #
 
-    offspring_chromosome_controller = StaticTrafficLightActuator(mutated_offspring , simulation_time)
+
+    offspring_chromosome_controller = StaticTrafficLightActuator(mutated_offspring)
     sim = Simulator()
-    parser = SimulationOutputParser(sim)
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(offspring_chromosome_controller)
-    if(sim.run(sumocfg1, time_steps=simulation_time, gui=False)):
+<<<<<<< HEAD
+    if(sim.run(sumocfg1, gui=False)):
         continue
-    sim.save_results("single_iteration_result")
+
 
 
     mean_speend_result = (np.mean(np.array(sim.results['mean_speed'])))
     duration_result = (np.mean(np.array(sim.results['duration'])))
     waiting_time = (np.mean(np.array(sim.results['waiting_time'])))
     time_loss =(np.mean(np.array(sim.results['time_loss'])))
+=======
+    if (sim.run(sumocfg1, gui=False)):
+        traci.close()
+        continue
+>>>>>>> genetic_algorithm_all_metrics
 
-    iteration_dataFrame = pd.DataFrame(({'iteration': [i],
-                                    'mean_speed': [mean_speend_result],
-                                       'duration': [duration_result],
-                                  'waiting_time': [waiting_time],
-                                     'time_loss': [time_loss]}))
 
+    mean_speed_result = (np.mean(sim.results['mean_speed']))
+    duration_result = (np.mean(sim.results['duration']))
+    waiting_time = (np.mean(sim.results['waiting_time']))
+    time_loss =(np.mean(sim.results['time_loss']))
 
-    frames = [simulation_dataFrame,iteration_dataFrame]
-    simulation_dataFrame = pd.concat(frames)
+    iteration_dataFrame = generate_iteration_data_frame (i,mean_speed_result,duration_result,waiting_time,time_loss)
 
+    simulation_dataFrame = concat_frames(simulation_dataFrame, iteration_dataFrame)
 
     fitness = XMLDataExtractor(path).get_data()
     mutated_offspring.set_fitness(fitness)
@@ -126,8 +158,8 @@ while(i<2):
     fitness_list.append(best_solution._fitness)
     i+=1
 
-simulation_dataFrame.set_index('iteration',inplace= True)
-simulation_dataFrame.to_csv("ga_result.csv")
+
+
 
 print("The fitness list is: ",fitness_list)
 time2 = time.time()
@@ -135,6 +167,8 @@ plt.plot(fitness_list)
 plt.show()
 print("="*10)
 print("iteration were performed in: ",time2-time1," seconds.")
+
+save_dataframe2CSV(simulation_dataFrame,"ga_results.csv")
 
 print(simulation_dataFrame.head())
 # /////////////////////////////////////////////////////////////////////

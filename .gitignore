@@ -9,3 +9,4 @@ __pycache__
 tripinfo.xml
 * .pkl
 *.csv 
+genetic_algorithms\single_iteration_result.pkl
