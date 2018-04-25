@@ -4,10 +4,9 @@ import numpy as np
 
 
 class StaticTrafficLightActuator:
-    def __init__(self,chromosome,simulation_time):
+    def __init__(self,chromosome):
 
         self._chromosome = chromosome
-        self._simulation_time = simulation_time
         self._counter =0
         self._current_phase =0
         self._phases_list = chromosome._phases_steps
