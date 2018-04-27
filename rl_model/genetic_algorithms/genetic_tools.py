@@ -17,13 +17,36 @@ class GAOpertations(object):
     def __init__(self):
         pass
 
-    def corssover(self,first_chromosome,second_chromosome):
-    	
+    def select_ranked(self,population):
+        population.sort(key=lambda x: x._fitness, reverse=True)
+        return population[0],population[1]
+        pass
+
+    def select_simply(self,population):
+        rand1 = random.randint(0, len(population) - 1)
+        rand2 = random.randint(0, len(population) - 1)
+        return population[rand1], population[rand2]
+
+
+    def point_corssover(self,first_chromosome,second_chromosome):
+
         portion = random.randint(0,7)
         first_part = first_chromosome._phases_steps[:portion]
         second_part = second_chromosome._phases_steps[portion:]
 
         return Chromosome(first_part + second_part,fitness=0)
+
+
+    def uniform_corssover(self,first_chromosome,second_chromosome):
+
+        phase_steps = []
+        for i in range(len(first_chromosome._phases_steps)):
+            rand = bool(random.randint(0,1))
+            if(rand):
+                phase_steps.append(first_chromosome._phases_steps[i])
+            else:
+                phase_steps.append(second_chromosome._phases_steps[i])
+        return Chromosome(phase_steps,fitness=0)
 
 
     def mutate(self,chromosome):
@@ -42,3 +65,4 @@ class GAOpertations(object):
                 mutated_chromosome[mutation_position] = 0
 
         return Chromosome(mutated_chromosome,fitness=0)
+

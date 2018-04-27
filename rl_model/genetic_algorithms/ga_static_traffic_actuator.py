@@ -1,4 +1,3 @@
-import traci
 import action as ac
 import numpy as np
 
@@ -14,8 +13,6 @@ class StaticTrafficLightActuator:
         pass
 
     def tick(self):
-        phase = traci.trafficlights.getPhase("node1")
-        mylist = self._phases_list
         modifier = ac.PhaseModifier("node1")
 
         if(self._counter >= 0 and self._counter<self._phase_array[0]):
