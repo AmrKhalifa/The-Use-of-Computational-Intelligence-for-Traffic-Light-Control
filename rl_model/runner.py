@@ -15,7 +15,3 @@ sumocfg2 = "..\\test_environments\\grid_map\\4by4.sumocfg"
 
 
 sim.run(sumocfg1, gui=False)
-print(np.array(sim.results["time_loss"]).mean())
-print(np.array(sim.results["duration"]).mean())
-print(np.array(sim.results["mean_speed"]).mean())
-print(np.array(sim.results["waiting_time"]).mean())

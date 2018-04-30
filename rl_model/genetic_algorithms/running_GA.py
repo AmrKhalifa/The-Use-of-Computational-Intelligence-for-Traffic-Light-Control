@@ -8,131 +8,161 @@ import random
 import matplotlib.pyplot as plt
 import time
 from stats.output_parser import SimulationOutputParser
+from gradient_descent.static_controller import  StaticTrafficLightController
+from action import PhaseModifier
 import pandas as pd
 import numpy as np
 
-sumocfg1 = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
+sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
 path = "tripinfo.xml"
 fitness_list = []
-mean_speend_result = []
-duration_result =[]
-waiting_time = []
-time_loss = []
 
+# /////////////////////////////////////////////////////////////////////////////////////////
+
+def define_data_frame():
+    simulation_dataFrame = pd.DataFrame({'iteration': [0],
+                                         'mean_speed': [0],
+                                         'duration': [0],
+                                         'waiting_time': [0],
+                                         'time_loss': [0]})
+    simulation_dataFrame.set_index('iteration', inplace=True)
+    return simulation_dataFrame
+
+
+def generate_iteration_data_frame(iteration_no,mean_speed_result,duration_result,waiting_time,time_loss):
+    iteration_dataFrame = pd.DataFrame(({'iteration': [iteration_no],
+                                         'mean_speed': [mean_speed_result],
+                                         'duration': [duration_result],
+                                         'waiting_time': [waiting_time],
+                                         'time_loss': [time_loss]}))
+    iteration_dataFrame.set_index('iteration',inplace= True)
+    return iteration_dataFrame
+
+
+def concat_frames(f1,f2):
+    frames = [f1, f2]
+    frame = pd.concat(frames)
+    return frame
+
+
+def save_dataframe2CSV(f1,file):
+    f1.to_csv(file)
 
 # ///////////////////////// initializing the population ///////////////////////////////////
 
-time1 = time.time()
-timing_list = []
-for _ in range(10):
-    timing_list.append(random.sample(range(1, 200), 8))
-simulation_time = 1000
+for iteration in range (10):
 
-population = []
-simulation_dataFrame = pd.DataFrame({'iteration': [0],
-                                    'mean_speed': [0],
-                                       'duration': [0],
-                                  'waiting_time': [0],
-                                     'time_loss': [0]})
-simulation_dataFrame.set_index('iteration',inplace= True)
+    time1 = time.time()
+    timing_list = []
+    for _ in range(4):
+        timing_list.append(random.sample(range(1, 200), 8))
+    #simulation_time = 1000
 
- # initializing the chromosomes #
-for timing in timing_list:
+    population = []
 
-    chromosome = Chromosome(timing, fitness= 0)
-    chromosome_controller = StaticTrafficLightActuator(chromosome,simulation_time)
+     # initializing the chromosomes #
+    for timing in timing_list:
 
-    sim = Simulator()
-    sim.add_tickable(chromosome_controller)
-    sim.run(sumocfg1, time_steps=simulation_time, gui=False)
+        chromosome = Chromosome(timing, fitness= 0)
+        chromosome_controller = StaticTrafficLightController(PhaseModifier("node1"),list(range(8)),chromosome._phases_steps)
 
-    traci.close()
+        sim = Simulator()
+        sim.add_tickable(chromosome_controller)
+        sim.run(sumocfg1, gui=False,time_steps=5000)
 
-    fitness = XMLDataExtractor(path).get_data()
-    chromosome.set_fitness(fitness)
-    population.append(chromosome)
+        fitness = XMLDataExtractor(path).get_data()
+        chromosome.set_fitness(fitness)
+        population.append(chromosome)
 
-# population.sort(key=lambda x: x._fitness, reverse=True)
-# print("the population is initialized ...")
-# print(" the population is : ")
-# for chromosome in population :
-#     print(chromosome._phases_steps)
-#     print(chromosome._fitness)
-# print("*="*15)
+    # population.sort(key=lambda x: x._fitness, reverse=True)
+    # print("the population is initialized ...")
+    # print(" the population is : ")
+    # for chromosome in population :
+    #     print(chromosome._phases_steps)
+    #     print(chromosome._fitness)
+    # print("*="*15)
 
-# ///////////////////////////// carrying out GA operations /////////////////////////////
-print(" performing genetic algorithm ....")
-for i in range (1,1000):
-    print("iteration : ",i)
-    ga_operator = GAOpertations()
+    # ///////////////////////////// carrying out GA operations /////////////////////////////
+    simulation_dataFrame = define_data_frame()
 
-    # crossover #
+    print(" performing genetic algorithm ....")
 
-    rand1 = random.randint(0,3)
-    rand2 = random.randint(0,3)
-    offspring = ga_operator.corssover(population[rand1],population[rand2])
-    #print("an offspring is born ")
-    #print(offspring.get_data())
+    i = 0
+    while(i<1000):
 
-    # mutation on the offspring #
+        print("iteration : ",i)
+        ga_operator = GAOpertations()
 
-    mutated_offspring = ga_operator.mutate(offspring)
-    #print("after mutation , the offspring is: ")
-    #print(mutated_offspring.get_data())
+        # selection #
 
-    # acquiring offspring's fitness #
+        #rand = random.randint(0,10)
+        #if(rand <8):
+            #chromosome_1,chromosome_2 = ga_operator.select_ranked(population)
+        #else:
+            #pass
+        chromosome_1, chromosome_2 = ga_operator.select_simply(population)
 
-    offspring_chromosome_controller = StaticTrafficLightActuator(mutated_offspring , simulation_time)
-    sim = Simulator()
-    parser = SimulationOutputParser(sim)
-    sim.add_simulation_component(SimulationOutputParser)
-    sim.add_tickable(offspring_chromosome_controller)
-    sim.run(sumocfg1, time_steps=simulation_time, gui=False)
-    sim.save_results("single_iteration_result")
-    traci.close()
+        # crossover #
 
-    mean_speend_result = (np.mean(np.array(sim.results['mean_speed'])))
-    duration_result = (np.mean(np.array(sim.results['duration'])))
-    waiting_time = (np.mean(np.array(sim.results['waiting_time'])))
-    time_loss =(np.mean(np.array(sim.results['time_loss'])))
+        #rand1 = random.randint(0,3)
+        #rand2 = random.randint(0,3)
+        offspring = ga_operator.point_corssover(chromosome_1,chromosome_2)
+        #offspring = ga_operator.uniform_corssover(chromosome_1,chromosome_2)
+        #print("an offspring is born ")
+        #print(offspring.get_data())
 
-    iteration_dataFrame = pd.DataFrame(({'iteration': [i],
-                                    'mean_speed': [mean_speend_result],
-                                       'duration': [duration_result],
-                                  'waiting_time': [waiting_time],
-                                     'time_loss': [time_loss]}))
+        # mutation on the offspring #
 
+        mutated_offspring = ga_operator.mutate(offspring)
+        #print("after mutation , the offspring is: ")
+        #print(mutated_offspring.get_data())
 
-    frames = [simulation_dataFrame,iteration_dataFrame]
-    simulation_dataFrame = pd.concat(frames)
+        # acquiring offspring's fitness #
+        offspring_chromosome_controller = StaticTrafficLightController(PhaseModifier("node1"),list(range(8)),mutated_offspring._phases_steps)
+        sim = Simulator()
+        sim.add_simulation_component(SimulationOutputParser)
+        sim.add_tickable(offspring_chromosome_controller)
+
+        if (sim.run(sumocfg1, gui=False, time_steps=5000)):
+            continue
+
+        mean_speed_result = (np.mean(sim.results['mean_speed']))
+        duration_result = (np.mean(sim.results['duration']))
+        waiting_time = (np.mean(sim.results['waiting_time']))
+        time_loss =(np.mean(sim.results['time_loss']))
 
 
-    fitness = XMLDataExtractor(path).get_data()
-    mutated_offspring.set_fitness(fitness)
-    #print(mutated_offspring.get_data())
-    mutated_chromosome_data, mutated_chromosome_fitness = mutated_offspring.get_data()
+        iteration_dataFrame = generate_iteration_data_frame (i,mean_speed_result,duration_result,waiting_time,time_loss)
 
-    # survival of the fittest #
+        simulation_dataFrame = concat_frames(simulation_dataFrame, iteration_dataFrame)
 
-    for chromosome in population:
-        if chromosome._fitness > mutated_chromosome_fitness:
-            population.remove(max(population,key=lambda x: x._fitness ))
-            population.append(mutated_offspring)
-            break
+        fitness = XMLDataExtractor(path).get_data()
+        mutated_offspring.set_fitness(fitness)
+        #print(mutated_offspring.get_data())
+        mutated_chromosome_data, mutated_chromosome_fitness = mutated_offspring.get_data()
 
-    best_solution = min(population,key=lambda x: x._fitness )
-    fitness_list.append(best_solution._fitness)
+        # survival of the fittest #
 
-simulation_dataFrame.set_index('iteration',inplace= True)
-simulation_dataFrame.to_csv("ga_result.csv")
+        for chromosome in population:
+            if chromosome._fitness > mutated_chromosome_fitness:
+                population.remove(max(population,key=lambda x: x._fitness ))
+                population.append(mutated_offspring)
+                break
 
-print("The fitness list is: ",fitness_list)
-time2 = time.time()
-plt.plot(fitness_list)
-plt.show()
-print("="*10)
-print("iteration were performed in: ",time2-time1," seconds.")
+        best_solution = min(population,key=lambda x: x._fitness )
+        fitness_list.append(best_solution._fitness)
 
-print(simulation_dataFrame.head())
+        i+=1
+
+    print("The fitness list is: ",fitness_list)
+    time2 = time.time()
+    #plt.plot(fitness_list)
+    #plt.show()
+    print("="*10)
+    print("iteration were performed in: ",time2-time1," seconds.")
+
+    save_dataframe2CSV(simulation_dataFrame,"ga_results"+str(iteration)+".csv")
+
+    print(simulation_dataFrame.head())
 # /////////////////////////////////////////////////////////////////////
 
