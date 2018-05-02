@@ -10,9 +10,9 @@ class StaticTrafficLightController:
 
     def tick(self):
         self._time_elapsed += 1
+        self._controller.set_phase(self._phase_sequence[self._phase_number])
         if self._time_elapsed == self._timings[self._phase_number]:
             self._phase_number += 1
             self._phase_number %= self._n_phases
             self._time_elapsed = 0
-            self._controller.set_phase(self._phase_sequence[self._phase_number])
 
