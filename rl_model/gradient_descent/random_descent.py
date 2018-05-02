@@ -3,6 +3,7 @@ from stats import SimulationOutputParser
 from action import PhaseModifier
 from static_controller import StaticTrafficLightController
 import matplotlib.pyplot as plt
+import os
 import random
 import pandas as pd
 import pickle
@@ -44,7 +45,7 @@ sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
 
 
 def initial_timings():
-    return random.sample(range(1,100), 8)
+    return random.sample(range(1,200), 8)
 
 
 def evaluate_timing(timing):
@@ -95,10 +96,9 @@ def mutate_timing(timings, magnitude):
 def mutate_timings2(timings, magnitude):
     n = len(timings)
     result = timings[:]
-    for i in range(2):
-        timing_to_modify = random.randrange(0, n)
-        result[timing_to_modify] += random.randrange(-magnitude, magnitude + 1)
-        result[timing_to_modify] = max(0, result[timing_to_modify])
+    timing_to_modify = random.randrange(0, n)
+    result[timing_to_modify] += random.choice([-10, 10])
+    result[timing_to_modify] = max(0, result[timing_to_modify])
     return result
 
 
@@ -121,6 +121,10 @@ def mutate_timings4(timings):
     new_timings[a], new_timings[b] = new_timings[b], new_timings[a]
     return new_timings
 
+results_dir = os.path.dirname(__file__)
+results_dir = os.path.dirname(results_dir)
+results_dir = os.path.join(results_dir, "results")
+results_dir = os.path.join(results_dir, "random_descent")
 for run in range(10):
     current_timing = initial_timings()
     results = evaluate_timing(current_timing)
@@ -146,14 +150,14 @@ for run in range(10):
                                       results["waiting_time"].mean(), results["time_loss"].mean())
         metrics = concat_frames(metrics, x)
 
-    heuristic_report = {"called":called, "improved": improved}
+    heuristic_report = {"called": called, "improved": improved}
 
-    save_dataframe2CSV(metrics, "iteration", "results/rd_runtime" + str(run) + ".csv")
-    save_timing_performance(current_timing, "results/rd_final_iteration" + str(run) )
-    file_io = open("results/rd_heuristic_report" + str(run) + ".pkl", 'wb')
+    save_dataframe2CSV(metrics, "iteration",os.path.join(results_dir,"rd_runtime" + str(run) + ".csv"))
+    save_timing_performance(current_timing, os.path.join(results_dir,"rd_final_iteration" + str(run)))
+    file_io = open(os.path.join(results_dir,r"rd_heuristic_report" + str(run) + ".pkl", 'wb'))
     pickle.dump(heuristic_report, file_io)
     file_io.close()
-    file_io = open("results/rd_final_iteration_timings" + str(run) + ".pkl", 'w')
+    file_io = open(os.path.join(results_dir,"rd_final_iteration_timings" + str(run) + ".txt", 'w'))
     file_io.write(str(current_timing))
     file_io.close()
 
