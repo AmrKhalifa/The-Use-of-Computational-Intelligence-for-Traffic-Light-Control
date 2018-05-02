@@ -103,9 +103,6 @@
         <lane id="road4_0" index="0" speed="13.89" length="195.25" shape="-51.65,250.00 -51.65,54.75"/>
     </edge>
 
-    <tlLogic id="node1" type="static" programID="0" offset="0">
-        <phase duration="100" state="GGGrrrGGgrrr"/>
-    </tlLogic>
     <tlLogic id="node1" type="static" programID="1" offset="0">
         <phase duration="33" state="GGgrrrGGgrrr"/>
         <phase duration="3" state="yygrrryygrrr"/>
@@ -116,107 +113,7 @@
         <phase duration="6" state="rrrrrGrrrrrG"/>
         <phase duration="3" state="rrrrryrrrrry"/>
     </tlLogic>
-    <tlLogic id="node1" type="static" programID="10" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="11" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="2" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="3" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="4" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="5" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="6" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="7" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="8" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-    <tlLogic id="node1" type="static" programID="9" offset="0">
-        <phase duration="33" state="GGgrrrGGgrrr"/>
-        <phase duration="3" state="yygrrryygrrr"/>
-        <phase duration="6" state="rrGrrrrrGrrr"/>
-        <phase duration="3" state="rryrrrrryrrr"/>
-        <phase duration="33" state="rrrGGgrrrGGg"/>
-        <phase duration="3" state="rrryygrrryyg"/>
-        <phase duration="6" state="rrrrrGrrrrrG"/>
-        <phase duration="3" state="rrrrryrrrrry"/>
-    </tlLogic>
-
+	
     <junction id="gneJ13" type="dead_end" x="-50.00" y="-150.00" incLanes="-road2_0" intLanes="" shape="-49.95,-150.00 -53.25,-150.00 -50.05,-150.00"/>
     <junction id="gneJ14" type="dead_end" x="-50.00" y="250.00" incLanes="-road4_0" intLanes="" shape="-50.05,250.00 -46.75,250.00 -49.95,250.00"/>
     <junction id="gneJ15" type="dead_end" x="-250.00" y="50.00" incLanes="-road3_0" intLanes="" shape="-250.00,49.95 -250.00,53.25 -250.00,50.05"/>
