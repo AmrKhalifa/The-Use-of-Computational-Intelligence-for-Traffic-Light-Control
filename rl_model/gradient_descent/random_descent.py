@@ -36,7 +36,7 @@ def concat_frames(f1,f2):
 
 
 def save_dataframe2CSV(f1,index,file):
-    f1.set_index(index, inplace=True)
+    #f1.set_index(index, inplace=True)
     f1.to_csv(file)
 
 sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
@@ -44,7 +44,7 @@ sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
 
 
 def initial_timings():
-    return [30]*8
+    return random.sample(range(1,100), 8)
 
 
 def evaluate_timing(timing):
@@ -57,6 +57,14 @@ def evaluate_timing(timing):
         return sim.results
     return False
 
+def save_timing_performance(timing, filename):
+    traffic_light = PhaseModifier("node1")
+    controller = StaticTrafficLightController(controller=traffic_light, sequence=list(range(8)), timings=timing)
+    sim = Simulator()
+    sim.add_simulation_component(SimulationOutputParser)
+    sim.add_tickable(controller)
+    sim.run(sumocfg1, gui=False)
+    sim.save_results(filename)
 
 def OI(old_objective, new_objective):
     return new_objective < old_objective
@@ -113,36 +121,39 @@ def mutate_timings4(timings):
     new_timings[a], new_timings[b] = new_timings[b], new_timings[a]
     return new_timings
 
-current_timing = initial_timings()
-results = evaluate_timing(current_timing)
-previous_objective = results["duration"].mean()
+for run in range(10):
+    current_timing = initial_timings()
+    results = evaluate_timing(current_timing)
+    previous_objective = results["duration"].mean()
+    metrics = define_data_frame()
+    improved = {0: 0, 1: 0, 2: 0, 3: 0}
+    called = {0: 0, 1: 0, 2: 0, 3: 0}
+    for i in range(1000):
+        new_results = False
+        while not new_results:
+            h = random.randrange(4)
+            new_timings = llh(h, current_timing)
+            new_results = evaluate_timing(new_timings)
 
-metrics = define_data_frame()
-improved = {0: 0, 1: 0, 2: 0, 3: 0}
-called = {0: 0, 1: 0, 2: 0, 3: 0}
+        objective = new_results["duration"].mean()
+        called[h] += 1
+        if OI(previous_objective, objective):
+            improved[h] += 1
+            current_timing = new_timings
+            previous_objective = objective
+            results = new_results
+        x = generate_iteration_data_frame(i, results["mean_speed"].mean(), results["duration"].mean(),
+                                      results["waiting_time"].mean(), results["time_loss"].mean())
+        metrics = concat_frames(metrics, x)
 
-for i in range(10):
-    new_results = False
-    while not new_results:
-        h = random.randrange(4)
-        new_timings = llh(h, current_timing)
-        new_results = evaluate_timing(new_timings)
+    heuristic_report = {"called":called, "improved": improved}
 
-    objective = new_results["duration"].mean()
-    called[h] += 1
-    if OI(previous_objective, objective):
-        improved[h] += 1
-        current_timing = new_timings
-        previous_objective = objective
-        results = new_results
-    else:
-        print(objective, previous_objective)
-    x = generate_iteration_data_frame(i, results["mean_speed"].mean(), results["duration"].mean(),
-                                  results["waiting_time"].mean(), results["time_loss"].mean())
-    metrics = concat_frames(metrics, x)
+    save_dataframe2CSV(metrics, "iteration", "results/rd_runtime" + str(run) + ".csv")
+    save_timing_performance(current_timing, "results/rd_final_iteration" + str(run) )
+    file_io = open("results/rd_heuristic_report" + str(run) + ".pkl", 'wb')
+    pickle.dump(heuristic_report, file_io)
+    file_io.close()
+    file_io = open("results/rd_final_iteration_timings" + str(run) + ".pkl", 'w')
+    file_io.write(str(current_timing))
+    file_io.close()
 
-print(metrics)
-heuristic_report = {"called":called, "improved": improved}
-print (heuristic_report)
-plt.plot(metrics["duration"])
-plt.show()
