@@ -7,7 +7,7 @@ from action import PhaseModifier
 sim = Simulator()
 
 sim.add_simulation_component(SimulationOutputParser)
-controller = StaticTrafficLightController(PhaseModifier("node1"),[4,3,0,3], [30]*4)
+controller = StaticTrafficLightController(PhaseModifier("node1"),[0,4], [50,50])
 sim.add_tickable(controller)
 
 sumocfg1 = "..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
