@@ -8,6 +8,10 @@ import random
 import pandas as pd
 import pickle
 
+
+sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
+sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
+
 # /////////////////////////////////////////////////////////////////////////////////////////
 
 def define_data_frame():
@@ -40,27 +44,30 @@ def save_dataframe2CSV(f1,index,file):
     #f1.set_index(index, inplace=True)
     f1.to_csv(file)
 
-sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
-sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
-
 
 def initial_timings():
-    return random.sample(range(1,200), 8)
+    return random.sample(range(50,100), 4)
 
 
 def evaluate_timing(timing):
     traffic_light = PhaseModifier("node1")
-    controller = StaticTrafficLightController(controller=traffic_light, sequence=list(range(8)), timings=timing)
+    full_timings = [3]*8
+    full_timings[0] = timing[0]
+    full_timings[4] = timing[1]
+    controller = StaticTrafficLightController(controller=traffic_light, sequence=list(range(8)), timings=full_timings)
     sim = Simulator()
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(controller)
-    if not sim.run(sumocfg1, time_steps=3000, gui=False):
+    if not sim.run(sumocfg1, time_steps=2000, gui=False):
         return sim.results
     return False
 
 def save_timing_performance(timing, filename):
+    full_timings = [3]*8
+    full_timings[0] = timing[0]
+    full_timings[4] = timing[1]
     traffic_light = PhaseModifier("node1")
-    controller = StaticTrafficLightController(controller=traffic_light, sequence=list(range(8)), timings=timing)
+    controller = StaticTrafficLightController(controller=traffic_light, sequence=list(range(8)), timings=full_timings)
     sim = Simulator()
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(controller)
@@ -121,47 +128,46 @@ def mutate_timings4(timings):
     new_timings[a], new_timings[b] = new_timings[b], new_timings[a]
     return new_timings
 
-results_dir = os.path.dirname(__file__)
-results_dir = os.path.dirname(results_dir)
-results_dir = os.path.join(results_dir, "results")
-results_dir = os.path.join(results_dir, "random_descent")
-for run in range(10):
-    results = False
-    while not results:
-        print("generating initial timings")
-        current_timing = initial_timings()
-        results = evaluate_timing(current_timing)
-    previous_objective = results["duration"].mean()
-    metrics = define_data_frame()
-    improved = {0: 0, 1: 0, 2: 0, 3: 0}
-    called = {0: 0, 1: 0, 2: 0, 3: 0}
-    for i in range(10):
-        new_results = False
-        while not new_results:
-            h = random.randrange(4)
-            new_timings = llh(h, current_timing)
-            new_results = evaluate_timing(new_timings)
+def run_10_rand_desc():
+    results_dir = os.path.dirname(__file__)
+    results_dir = os.path.dirname(results_dir)
+    results_dir = os.path.join(results_dir, "results")
+    results_dir = os.path.join(results_dir, "random_descent")
+    for run in range(10):
+        results = False
+        while not results:
+            print("generating initial timings")
+            current_timing = initial_timings()
+            results = evaluate_timing(current_timing)
+        previous_objective = results["duration"].mean()
+        metrics = define_data_frame()
+        improved = {0: 0, 1: 0, 2: 0, 3: 0}
+        called = {0: 0, 1: 0, 2: 0, 3: 0}
+        for i in range(1000):
+            new_results = False
+            while not new_results:
+                h = random.randrange(4)
+                new_timings = llh(h, current_timing)
+                new_results = evaluate_timing(new_timings)
 
-        objective = new_results["duration"].mean()
-        called[h] += 1
-        if OI(previous_objective, objective):
-            improved[h] += 1
-            current_timing = new_timings
-            previous_objective = objective
-            results = new_results
-        x = generate_iteration_data_frame(i, results["mean_speed"].mean(), results["duration"].mean(),
-                                      results["waiting_time"].mean(), results["time_loss"].mean())
-        metrics = concat_frames(metrics, x)
+            objective = new_results["duration"].mean()
+            called[h] += 1
+            if OI(previous_objective, objective):
+                improved[h] += 1
+                current_timing = new_timings
+                previous_objective = objective
+                results = new_results
+            x = generate_iteration_data_frame(i, results["mean_speed"].mean(), results["duration"].mean(),
+                                          results["waiting_time"].mean(), results["time_loss"].mean())
+            metrics = concat_frames(metrics, x)
 
-    heuristic_report = {"called": called, "improved": improved}
-    plt.plot(metrics["duration"])
-    plt.show()
-    # save_dataframe2CSV(metrics, "iteration",os.path.join(results_dir,"rd_runtime" + str(run) + ".csv"))
-    # save_timing_performance(current_timing, os.path.join(results_dir,"rd_final_iteration" + str(run)))
-    # file_io = open(os.path.join(results_dir,r"rd_heuristic_report" + str(run) + ".pkl", 'wb'))
-    # pickle.dump(heuristic_report, file_io)
-    # file_io.close()
-    # file_io = open(os.path.join(results_dir,"rd_final_iteration_timings" + str(run) + ".txt", 'w'))
-    # file_io.write(str(current_timing))
-    # file_io.close()
-    #
+        heuristic_report = {"called": called, "improved": improved}
+        save_dataframe2CSV(metrics, "iteration",os.path.join(results_dir,"rd_runtime" + str(run) + ".csv"))
+        save_timing_performance(current_timing, os.path.join(results_dir,"rd_final_iteration" + str(run)))
+        file_io = open(os.path.join(results_dir,r"rd_heuristic_report" + str(run) + ".pkl"), 'wb')
+        pickle.dump(heuristic_report, file_io)
+        file_io.close()
+        file_io = open(os.path.join(results_dir,"rd_final_iteration_timings" + str(run) + ".txt"), "w")
+        file_io.write(str(current_timing))
+        file_io.close()
+

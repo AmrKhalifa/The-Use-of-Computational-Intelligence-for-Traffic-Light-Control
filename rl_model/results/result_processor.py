@@ -22,7 +22,7 @@ def process_runtimes_rd():
     arr = np.empty((0,5))
 
     for i in range(10):
-        dataframe = pd.read_csv("rd_runtime" + str(i) + ".csv")
+        dataframe = pd.read_csv("random_descent/rd_runtime" + str(i) + ".csv")
         last_row = dataframe.tail(1).as_matrix()
         arr = np.vstack((arr, last_row))
     print(list(dataframe))
@@ -87,4 +87,4 @@ def generate_objective_function_plot():
     plt.grid(linestyle=":")
     plt.show()
     
-generate_objective_function_plot()
+process_runtimes_rd()

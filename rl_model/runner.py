@@ -7,11 +7,18 @@ from action import PhaseModifier
 sim = Simulator()
 
 sim.add_simulation_component(SimulationOutputParser)
-controller = StaticTrafficLightController(PhaseModifier("node1"),[4,3,0,3], [30]*4)
+t = [3]*8
+t[0] = 50
+t[4] = 50
+print(t)
+controller = StaticTrafficLightController(PhaseModifier("node1"),list(range(8)),t)
 sim.add_tickable(controller)
+
+
 
 sumocfg1 = "..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
 sumocfg2 = "..\\test_environments\\grid_map\\4by4.sumocfg"
 
 
-sim.run(sumocfg1, gui=True)
+sim.run(sumocfg1, gui=False)
+print(sim.results["duration"].mean())
