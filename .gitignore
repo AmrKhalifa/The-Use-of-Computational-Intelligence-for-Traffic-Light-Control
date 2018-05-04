@@ -11,3 +11,4 @@ tripinfo.xml
 *.csv 
 genetic_algorithms/single_iteration_result.pkl
 genetic_algorithms/ga_old_run/
+genetic_algorithms/ga_results/ 
