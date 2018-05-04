@@ -65,8 +65,7 @@ for iteration in range (10):
     timing_list = []
 
     for _ in range(4):
-        #timing_list.append(random.sample(range(50, 100), 2))
-        timing_list.append([50 ,50])
+        timing_list.append(random.sample(range(50, 100), 2))
 
     population = []
 
@@ -75,8 +74,16 @@ for iteration in range (10):
 
         print(timing)
         chromosome = Chromosome(timing, fitness= 0)
-        chromosome_controller = StaticTrafficLightController(PhaseModifier("node1"),[0,4],chromosome._phases_steps)
+        configuration = []
+        for ii in range (8):
+            configuration.append(3)
+            if ii == 0:
+                configuration[ii] = timing [0]
+            if ii == 4:
+                configuration[ii] = timing [1]
+        chromosome_controller = StaticTrafficLightController(PhaseModifier("node1"),list(range(0,8)),configuration)
         print(chromosome._phases_steps)
+        print(configuration)
 
         sim = Simulator()
         sim.add_tickable(chromosome_controller)
@@ -91,8 +98,16 @@ for iteration in range (10):
 
 
     best_initial_solution = min(population, key=lambda x: x._fitness)
-    best_initial_solution_controller = StaticTrafficLightController(PhaseModifier("node1"), [0,4],best_initial_solution._phases_steps)
 
+    configuration = []
+    for ii in range(8):
+        configuration.append(3)
+        if ii == 0:
+            configuration[ii] = best_initial_solution._phases_steps[0]
+        if ii == 4:
+            configuration[ii] = best_initial_solution._phases_steps[1]
+
+    best_initial_solution_controller = StaticTrafficLightController(PhaseModifier("node1"), list(range(0,8)),configuration)
     sim = Simulator()
     sim.add_simulation_component(SimulationOutputParser)
     sim.add_tickable(best_initial_solution_controller)
@@ -135,8 +150,18 @@ for iteration in range (10):
         mutated_offspring = ga_operator.mutate(offspring)
 
         # determining offspring's fitness #
+        configuration = []
 
-        offspring_chromosome_controller = StaticTrafficLightController(PhaseModifier("node1"),[0,4],mutated_offspring._phases_steps)
+
+        for ii in range(8):
+            configuration.append(3)
+            if ii == 0:
+                configuration[ii] = mutated_offspring._phases_steps[0]
+            if ii == 4:
+                configuration[ii] = mutated_offspring._phases_steps[1]
+
+
+        offspring_chromosome_controller = StaticTrafficLightController(PhaseModifier("node1"), list(range(0, 8)),configuration)
         sim = Simulator()
         sim.add_simulation_component(SimulationOutputParser)
         sim.add_tickable(offspring_chromosome_controller)
