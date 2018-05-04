@@ -64,7 +64,7 @@ for iteration in range (10):
     time1 = time.time()
     timing_list = []
 
-    for _ in range(4):
+    for _ in range(5):
         timing_list.append(random.sample(range(50, 100), 2))
 
     population = []
