@@ -57,11 +57,13 @@ class GAOpertations(object):
         plus_minus = bool(random.randint(0,1))
 
         if(plus_minus):
-            mutated_chromosome[mutation_position] += random.randint(0,10)
+            mutated_chromosome[mutation_position] += random.randint(0,15)
         else:
             if mutated_chromosome[mutation_position] >10 :
                 mutated_chromosome[mutation_position] -= random.randint(0,10)
-            else :
+            elif mutated_chromosome[mutation_position] > 5 and mutated_chromosome[mutation_position]< 10 :
+                mutated_chromosome[mutation_position] -= random.randint(0, 5)
+            else:
                 mutated_chromosome[mutation_position] = 0
 
         return Chromosome(mutated_chromosome,fitness = 0)
