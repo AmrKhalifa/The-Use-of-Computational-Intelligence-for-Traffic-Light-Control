@@ -46,7 +46,7 @@ def save_dataframe2CSV(f1,index,file):
 
 
 def initial_timings():
-    return random.sample(range(50,100), 4)
+    return random.sample(range(50,100), 2)
 
 
 def evaluate_timing(timing):
