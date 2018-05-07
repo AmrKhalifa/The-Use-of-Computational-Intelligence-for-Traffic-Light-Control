@@ -1,7 +1,7 @@
 from simulation import Simulator
 from stats import SimulationOutputParser
 from action import PhaseModifier
-from static_controller import StaticTrafficLightController
+from .static_controller import StaticTrafficLightController
 import matplotlib.pyplot as plt
 import os
 import random

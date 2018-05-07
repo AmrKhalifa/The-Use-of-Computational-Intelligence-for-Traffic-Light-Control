@@ -21,4 +21,5 @@ sumocfg2 = "..\\test_environments\\grid_map\\4by4.sumocfg"
 
 
 sim.run(sumocfg1, gui=False)
-print(sim.results["duration"].mean())
+print(sim.results["mean_speed"].var()**.5)
+print(sim.results["duration"].var()**.5)
