@@ -21,11 +21,11 @@ sumocfg2 = "..\\..\\test_environments\\grid_map\\4by4.sumocfg"
 
 
 def simulated_annealing_accept(previous_objective, objective, temperature):
-    if previous_objective < objective:
+    if objective < previous_objective:
         return True
     if temperature < 0.00000001:
         return False
-    accept_worse = math.exp((objective - previous_objective) / temperature) > random.random()
+    accept_worse = math.exp((previous_objective - objective) / temperature) > random.random()
     return accept_worse
 
 
@@ -48,7 +48,7 @@ def run_10_sim_anneal():
         metrics = define_data_frame()
         improved = {0: 0, 1: 0, 2: 0, 3: 0}
         called = {0: 0, 1: 0, 2: 0, 3: 0}
-        for i in range(10):
+        for i in range(1000):
             new_results = False
             while not new_results:
                 h = random.randrange(4)
@@ -77,3 +77,4 @@ def run_10_sim_anneal():
         file_io.close()
 
 
+run_10_sim_anneal()
