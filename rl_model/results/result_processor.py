@@ -2,7 +2,7 @@ def process_heuristic_results():
     import pickle
     results = {'improved': {0: 0, 1: 0, 2: 0, 3: 0}, 'called': {0: 0, 1: 0, 2: 0, 3: 0}}
     for i in range(10):
-        file_io = open("rd_heuristic_report"+str(i)+".pkl", 'rb')
+        file_io = open("random_descent/rd_heuristic_report"+str(i)+".pkl", 'rb')
         dict_ = pickle.load(file_io)
         for i in range(4):
             results["improved"][i] += dict_["improved"][i]
@@ -40,10 +40,9 @@ def process_runtimes_ga():
     arr = np.empty((0,5))
 
     for i in range(10):
-        dataframe = pd.read_csv("../ga_results/ga_results" + str(i) + ".csv")[1:]
-        dataframe = dataframe.sort_values(by=["duration"])
-        print(dataframe.head(1))
-        last_row = dataframe.head(1).as_matrix()
+        dataframe = pd.read_csv("ga_results/ga_results" + str(i) + ".csv")[1:]
+        print(dataframe.tail(1))
+        last_row = dataframe.tail(1).as_matrix()
         arr = np.vstack((arr, last_row))
     print(list(dataframe))
     print(arr[:,1].argsort())
@@ -87,6 +86,31 @@ def generate_objective_function_plot():
     plt.grid(linestyle=":")
     plt.show()
 
+def average_files(path, number):
+    import numpy as np
+    mats = []
+    for i in range(number):
+        mat = np.genfromtxt(path+str(i) + ".csv", delimiter=",")[2:, 1:]
+        mats.append(mat)
+    return sum(mats) / number
+
+def generate_plots():
+    import matplotlib.pyplot as plt
+    import numpy as np
+    ga_data = average_files("ga_results/ga_results", 10)
+    rd_data = average_files("random_descent/rd_runtime", 10)
+
+    ylabels = ["Mean Jouney Time $seconds$","Mean Vehicle Speed $m/s$","Mean Time Loss $seconds$",
+               "Mean Waiting time $seconds$"]
+    for column, label in enumerate(ylabels):
+        plt.plot(ga_data[:, column], "-", linewidth=2, color="r", label="Genetic Algorithm")
+        plt.plot(rd_data[:, column], "--", linewidth=2, color="g", label="Random Descent")
+        plt.xlabel("Iteration")
+        plt.ylabel(label)
+        plt.legend()
+        plt.grid(linestyle=":")
+        plt.show()
+
 
 def variance_analysis():
     import numpy as np
@@ -123,4 +147,5 @@ def variance_analysis():
         print("%.2f" % matrix.mean(axis=0)[1], end=" & ")
         print("%.2f" % matrix[0,1], end=" \\\\\n")
 
-variance_analysis()
+process_runtimes_rd()
+process_runtimes_ga()
