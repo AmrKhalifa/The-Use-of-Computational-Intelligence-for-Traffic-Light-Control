@@ -22,7 +22,7 @@ def process_runtimes_rd():
     arr = np.empty((0,5))
 
     for i in range(10):
-        dataframe = pd.read_csv("rd_runtime" + str(i) + ".csv")
+        dataframe = pd.read_csv("random_descent/rd_runtime" + str(i) + ".csv")
         last_row = dataframe.tail(1).as_matrix()
         arr = np.vstack((arr, last_row))
     print(list(dataframe))
@@ -86,5 +86,41 @@ def generate_objective_function_plot():
     plt.legend()
     plt.grid(linestyle=":")
     plt.show()
-    
-generate_objective_function_plot()
+
+
+def variance_analysis():
+    import numpy as np
+    from gradient_descent.random_descent import evaluate_timing
+    ga_std = np.empty((0,3))
+    rd_std = np.empty((0,3))
+    for i in range(10):
+        with open(r"ga_results\timings_list%i.csv"%i, "r") as f:
+            values = f.readlines()[-1].split(",")
+            timings = map(int, map(float, values))
+            timings = list(timings)
+            results = evaluate_timing(timings)
+            ga_std = np.vstack((ga_std, np.asarray([results["duration"].mean(),
+                                                    results["duration"].var()**.5,
+                                                    results["mean_speed"].var()**.5
+                                                    ])))
+
+
+    import pickle
+    for i in range(10):
+        with open(r"random_descent\rd_final_iteration%i.pkl"%i,'rb') as file_io:
+            results = pickle.load(file_io)
+            rd_std = np.vstack((rd_std, np.asarray([results["duration"].mean(),
+                                                    results["duration"].var()**.5,
+                                                    results["mean_speed"].var()**.5
+                                                    ])))
+    ga_std = ga_std[ga_std[:,0].argsort()]
+    rd_std = rd_std[rd_std[:,0].argsort()]
+    print("Algorithm & Mean VSSD & Best Run VSSD & Mean JTSD & Best Run JTSD")
+    for algorithm, matrix in zip(["Random Descent", "Genetic Algorithm"],[rd_std, ga_std]):
+        print(algorithm, end=" & " )
+        print("%.2f" % matrix.mean(axis=0)[2], end=" & ")
+        print("%.2f" % matrix[0,2], end=" & ")
+        print("%.2f" % matrix.mean(axis=0)[1], end=" & ")
+        print("%.2f" % matrix[0,1], end=" \\\\\n")
+
+variance_analysis()

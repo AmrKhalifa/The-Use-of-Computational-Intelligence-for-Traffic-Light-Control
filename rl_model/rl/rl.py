@@ -12,17 +12,26 @@ class StateGenerator:
         # TODO add traffic light phase to state
         state = np.array(())
         for lane,direction in zip(("-road1_0", "road2_0", "road3_0", "road4_0"), ("in", "in", "in", "in")):
-            a, b = dtse.DTSE_Generator.get_traffic_state(lane, direction, 15, 5)
+            a, b = dtse.DTSE_Generator.get_traffic_state(lane, direction, 15, 7.5)
             a, b = np.asarray(a), np.asarray(b)
             state = np.hstack((state, a.ravel(), b.ravel()))
+        phase = dtse.DTSE_Generator.get_traffic_light_phase()
+
+        state = np.hstack((state))
         return state
 
 class Controller:
     def __init__(self, phase_modifier):
         self._phase_modifier = phase_modifier
+        self._ticks_since_changed = 0
 
     def do_action(self, action):
+        self._phase_modifier
         self._phase_modifier.set_phase(action)
+
+    def tick(self):
+        self._ticks_since_changed += 1
+
 
 class RLAgent:
     def __init__(self, reward_calc, state, controller, actions):
@@ -57,7 +66,7 @@ if __name__ == "__main__":
             self.s = s
 
         def tick(self):
-            print(s.get_state())
+            s.get_state()
 
     sim = Simulator()
     rc = RewardCalculator()
@@ -65,7 +74,7 @@ if __name__ == "__main__":
     c = Controller(PhaseModifier("node1"))
     s = StateGenerator()
     agent = RLAgent(rc,s,c,[0,3,4])
-    sim.add_tickable(agent)
+    sim.add_tickable(X(s))
     sumocfg = "..\\..\\test_environments\\single_intersection_map\\newnet.sumocfg"
     sim.run(sumocfg, time_steps=1000, gui=True)
 
