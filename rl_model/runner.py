@@ -12,6 +12,7 @@ t[0] = 50
 t[4] = 50
 print(t)
 controller = StaticTrafficLightController(PhaseModifier("node1"),list(range(8)),t)
+
 sim.add_tickable(controller)
 
 

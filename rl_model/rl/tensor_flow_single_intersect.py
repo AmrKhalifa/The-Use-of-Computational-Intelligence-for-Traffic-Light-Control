@@ -5,7 +5,6 @@ from action import PhaseModifier
 
 
 class SingleIntersectQAgent (RLAgent):
-
     def __init__(self, reward_calc, state, controller, actions):
         super().__init__(reward_calc, state, controller, actions)
         import itertools
