@@ -32,8 +32,9 @@ class SingleIntersectQAgent (RLAgent):
     def _build_model_graph(self):
         self._model_input = tf.placeholder(dtype=tf.float64, shape=[1,120])
         layer1 = tf.layers.dense(inputs=self._model_input,units=100, activation=tf.nn.relu)
-        layer2 = tf.layers.dense(inputs=layer1, units=3)
-        self._model_output = layer2
+        layer2 = tf.layers.dense(inputs=layer1,units=100, activation=tf.nn.relu)
+        layer3 = tf.layers.dense(inputs=layer2, units=3)
+        self._model_output = layer3
 
         self._calculated_q = tf.placeholder(dtype=tf.float64, shape=(1, N_ACTIONS))
         self._loss = tf.reduce_sum(tf.square(self._calculated_q - self._model_output))
@@ -71,15 +72,15 @@ if __name__ == "__main__":
     controller = Controller(PhaseModifier("node1"), action_translator)
     state_gen = StateGenerator()
     agent = SingleIntersectQAgent(rc, state_gen, controller, np.eye(3))
-    explore_prob = .3
+    explore_prob = .4
     avg_speed = []
     mean_dur = []
-    for episode in range(100):
+    for episode in range(500):
         controller.reset()
         rc.reset()
         agent.reset()
 
-        explore_prob *= .95
+        explore_prob *= .99
         agent.set_explore_probability(explore_prob)
 
         sim = Simulator()
@@ -90,9 +91,9 @@ if __name__ == "__main__":
         sim.run(sumocfg, time_steps=3000, gui=False)
         mean_speed = sim.results["mean_speed"].mean()
         mean_dur.append(sim.results["duration"].mean())
-        print("Episode %i : avg speed %.3f"%(episode, mean_speed))
+        print("Episode %i : avg speed %.3f, mean journey %.3f"%(episode, mean_speed, mean_dur[-1]))
         avg_speed.append(mean_speed)
-        agent.save_model("./rl_models/first_model")
+        agent.save_model("./rl_models/2_layer_model_100_100")
 
     print(avg_speed)
     print(mean_dur)

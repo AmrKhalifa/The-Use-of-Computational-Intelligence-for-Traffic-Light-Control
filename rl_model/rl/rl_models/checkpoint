@@ -1,2 +1,2 @@
-model_checkpoint_path: "first_model"
-all_model_checkpoint_paths: "first_model"
+model_checkpoint_path: "2_layer_model_100_100"
+all_model_checkpoint_paths: "2_layer_model_100_100"
