@@ -11,6 +11,7 @@ class Simulator:
         self._tick_freq = {}
         self._sim_step = 0
         self.results = {}
+        self.SAR = {}
         self.output_file = "tripinfo.xml"
     def tick(self):
         traci.simulationStep()

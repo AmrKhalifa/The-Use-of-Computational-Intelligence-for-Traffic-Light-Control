@@ -10,7 +10,6 @@ roads_list = [["-road1_0","road3_0"],["road2_0","road4_0"]]
 sim = Simulator()
 
 
-
 LQF_actor = LongestQueueFirst("node1",roads_list)
 sim.add_tickable(LQF_actor,freq=1)
 sim.add_simulation_component(SimulationOutputParser)

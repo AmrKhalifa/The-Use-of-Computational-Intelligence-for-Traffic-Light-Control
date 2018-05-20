@@ -48,7 +48,6 @@ class RewardCalculator:
 
         if self._is_logging:
             self._log.append(r)
-
         return r
 
     def get_log(self):
