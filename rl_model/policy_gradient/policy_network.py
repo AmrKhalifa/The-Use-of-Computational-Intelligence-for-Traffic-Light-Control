@@ -7,14 +7,12 @@ class PolicyNetwork:
     n_features = 120
     n_classes = 2
     layer1_neurons = 30
-    layer2_neurons = 30
+    layer2_neurons = 10
     learning_rate = .01
 
-    x = tf.placeholder(tf.float64, shape = [1, n_features])
-    _y = tf.placeholder(tf.float64, shape = [1, n_classes])
-    initializer = tf.contrib.layers.xavier_initializer()
-
-
+    x = tf.placeholder(tf.float64, shape = [None, n_features])
+    _y = tf.placeholder(tf.float64, shape = [None, n_classes])
+    
     sess = tf.Session()
 
     weights = {
@@ -38,6 +36,8 @@ class PolicyNetwork:
 
         global_initializer = tf.global_variables_initializer()
         cls.sess.run(global_initializer)
+        local_initializer = tf.local_variables_initializer()
+        cls.sess.run(local_initializer)
 
         pass
 
@@ -53,26 +53,19 @@ class PolicyNetwork:
         network_output = tf.add(tf.matmul(l2, cls.weights['output_w']), cls.biases['output_b'])
 
         outputs_softmax = tf.nn.softmax(network_output)
-
+        #tf.reset_default_graph()
         return network_output,outputs_softmax
 
     @classmethod
     def train(cls,s,a,r):
-
-        output,output_softmax = cls.feed_forward(s.reshape(1,120))
+        output, output_softmax = cls.feed_forward(s)
         neg_log_prob = tf.nn.softmax_cross_entropy_with_logits(logits=output, labels=cls._y)
         loss = tf.reduce_mean(neg_log_prob * r)
         train_op = tf.train.AdamOptimizer(cls.learning_rate).minimize(loss)
-
-        global_initializer = tf.global_variables_initializer()
-        cls.sess.run(global_initializer)
-
-        local_initializer = tf.local_variables_initializer()
-        cls.sess.run(local_initializer)
-
-        cls.sess.run(train_op, feed_dict={cls.x :s.reshape(1,120),cls._y: a.reshape(1,2)})
-        theLoss = cls.sess.run(loss ,feed_dict={cls.x :s.reshape(1,120),cls._y: a.reshape(1,2)})
-
+       
+        cls.sess.run(train_op, feed_dict={cls.x: s, cls._y: a})
+        theLoss = cls.sess.run(loss, feed_dict={cls.x: s, cls._y: a})
+        sess.get_default_graph().finalize()
         return theLoss
 
 

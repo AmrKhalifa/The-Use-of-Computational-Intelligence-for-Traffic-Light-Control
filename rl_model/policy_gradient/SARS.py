@@ -4,11 +4,10 @@ import numpy as np
 import reward
 from action import PhaseModifier
 from dtse import DTSE_Generator
-from policy_network import PolicyNetwork
 from simulation import SimulationComponent
 
 
-class StateAction(SimulationComponent):
+class StateObserver(SimulationComponent):
 
     def __init__(self, simulation):
 
@@ -17,22 +16,20 @@ class StateAction(SimulationComponent):
         self._node = "node1"
         self._states = []
         self._current_state = 0
-        self._actions = []
         self._modifier = PhaseModifier(self._node)
 
     def tick(self):
-
+        print("state has been observed, and the state is: ")
         state = self.get_state()
+        print(self._current_state)
+        print("...")
         self._states.append(state)
-        self.act()
         pass
 
     def post_run(self):
         results = {"states": [], "actions": [], "rewards": []}
         results["states"].append(self._states)
-        results["actions"].append(self._actions)
         self._simulation.results = results
-
         pass
 
     def get_state(self):
@@ -57,21 +54,6 @@ class StateAction(SimulationComponent):
         self._current_state = state
         return state
 
-    def act(self):
-
-        output,output_softmax = PolicyNetwork.get_output(self._current_state.reshape(1,120))
-
-        action = np.random.choice(range(len(output_softmax.ravel())), p=output_softmax.ravel())
-
-        if(action == 0):
-            self._modifier.set_phase(0)
-        else:
-            self._modifier.set_phase(4)
-
-        one_hot_action = np.zeros(2)
-        one_hot_action[action] = 1
-        self._actions.append(one_hot_action)
-        pass
 
 class RewardCollector:
     def __init__(self,reward_calculator):
@@ -84,5 +66,26 @@ class RewardCollector:
         pass
 
     def get_reward_log(self):
-        return self._reward_log
+        return self._reward_log 
 
+class Actor:
+    def __init__(self,StateObserver,network):
+        self._network = network
+        self._actions_list = []
+        self._StateObserver = StateObserver
+
+        pass
+
+    def tick(self):
+        # act
+        #network.get_action(self._StateObserver._current_state)
+        print("<<< am acting >>>")
+        print("the state is: ")
+        print(self._StateObserver._current_state)
+        print("done")
+        # save to the list
+        pass
+
+    def get_actions_list(self):
+        return self._actions_list
+        pass

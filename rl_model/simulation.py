@@ -15,12 +15,15 @@ class Simulator:
         self.output_file = "tripinfo.xml"
     def tick(self):
         traci.simulationStep()
-        for tickable in self._tickables:
-            if self._sim_step % self._tick_freq[tickable] == 0:
-                tickable.tick()
+
         for component in self._sim_components:
             if self._sim_step % self._tick_freq[component] == 0:
                 component.tick()
+
+        for tickable in self._tickables:
+            if self._sim_step % self._tick_freq[tickable] == 0:
+                tickable.tick()
+
         self._sim_step += 1
 
     def run(self, path_to_cfg, time_steps="run_to_completion" ,gui=False):
@@ -60,8 +63,8 @@ class Simulator:
     def add_postrun(self, func):
         self._post_run_funcs.append(func)
 
-    def add_simulation_component(self, Component, freq=1, *args, **kwargs):
-        component = Component(self, *args, **kwargs)
+    def add_simulation_component(self, component, freq=1, *args, **kwargs):
+        #component = Component(self, *args, **kwargs)
         self._sim_components.append(component)
         self._tick_freq[component] = freq
 

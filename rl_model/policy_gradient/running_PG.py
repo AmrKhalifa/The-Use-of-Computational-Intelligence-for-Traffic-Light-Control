@@ -1,27 +1,17 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from SARS import RewardCollector
-from SARS import StateAction
+from SARS import StateObserver
+from SARS import Actor
 from action import PhaseModifier
-from policy_network import PolicyNetwork
+from torch_network import PolicyNetwork
 from reward import RewardCalculator
 from simulation import Simulator
+import traci
 
 sumocfg1 = "..\\..\\test_environments\\single_intersection_random_trips\\newnet.sumocfg"
 roads_list = [["-road1_0","road3_0"],["road2_0","road4_0"]]
-
-rc = RewardCalculator(alpha= 0)
-rewardCollector = RewardCollector(rc)
-
-sim = Simulator()
-sim.add_simulation_component(StateAction)
-sim.add_tickable(rc)
-sim.add_tickable(rewardCollector)
-
-PolicyNetwork.initialize_variables()
-
-sim.run(sumocfg1, gui=False, time_steps= 1500)
-sim.results['rewards'] = rewardCollector.get_reward_log()
+lossings = []
 
 gamma = .99
 
@@ -36,25 +26,38 @@ def discount_and_norm_rewards(rewards):
     discounted_episode_rewards /= np.std(discounted_episode_rewards)
     return discounted_episode_rewards
 
-discounted_normed_rewards = discount_and_norm_rewards(sim.results['rewards'])
 
-loss = []
-loss_sum = 0
-counter = 0
-for i in range (len(sim.results['states'][0])):
+def shift(seq, n):
+    n = n % len(seq)
+    return seq[n:] + seq[:n]
 
-    s = sim.results['states'][0][i]
-    a = sim.results['actions'][0][i]
-    r = sim.results['rewards'][0]
+for i in range (1):
+    policy_network = PolicyNetwork()
 
-    # fix the reward shit
-    loss.append(PolicyNetwork.train(s,a,r))
-    counter +=1
-    print(counter)
+    #rc = RewardCalculator(alpha= 0)
+    #rewardCollector = RewardCollector(rc)
 
+    sim = Simulator()
+    observer = StateObserver(sim)
+    sim.add_simulation_component(observer)
+    actor = Actor(observer,policy_network)
+    sim.add_tickable(actor)
+    #sim.add_tickable(rc)
+    #sim.add_tickable(rewardCollector)
 
-for element in loss:
-    print(element)
+    sim.run(sumocfg1, gui=True, time_steps= 100)
+    #sim.results['rewards'] = rewardCollector.get_reward_log()
+    #sim.results['actions']= actor.get_actions_list()
+   
+    #shifted_rewards = shift(sim.results['rewards'],1)
 
+    #discounted_normed_rewards = discount_and_norm_rewards(shifted_rewards)
+
+    #s = sim.results['states'][0]
+    #a = sim.results['actions'][0]
+    #r = discounted_normed_rewards
+
+    #loss = PolicyNetwork.train(np.array(s),np.array(a),np.array(r))
+    #print(loss)
 
 
