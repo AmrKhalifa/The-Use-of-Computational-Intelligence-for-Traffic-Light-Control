@@ -12,7 +12,7 @@ sim = Simulator()
 
 LQF_actor = LongestQueueFirst("node1",roads_list)
 sim.add_tickable(LQF_actor,freq=1)
-sim.add_simulation_component(SimulationOutputParser)
+sim.add_simulation_component(SimulationOutputParser(sim))
 
 sim.run(sumocfg1, gui=False)
 
@@ -21,10 +21,14 @@ duration_result = (np.mean(sim.results['duration']))
 waiting_time = (np.mean(sim.results['waiting_time']))
 time_loss = (np.mean(sim.results['time_loss']))
 
+vssd = sim.results['mean_speed'].var()**.5
+jtsd = sim.results['duration'].var()**.5
+
 print("×*×"*15)
 
 print("Mean speed result: ", mean_speed_result)
 print("duration result: ", duration_result)
 print("waiting time result: ", waiting_time)
 print("time loss result: ", time_loss)
-
+print("vssd:", vssd)
+print("jtsd:", jtsd)

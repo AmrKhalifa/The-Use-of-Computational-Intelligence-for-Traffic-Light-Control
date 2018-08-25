@@ -43,7 +43,10 @@ class RewardCalculator:
         if abs(self._alpha ) < .000001:
             r = avg_speed
         else:
-            delay_penalty = float(sum(self.vehicles.values()))/n_cars
+            if n_cars != 0:
+                delay_penalty = float(sum(self.vehicles.values()))/n_cars
+            else:
+                delay_penalty = 0
             r =  avg_speed - self._alpha*delay_penalty
 
         if self._is_logging:

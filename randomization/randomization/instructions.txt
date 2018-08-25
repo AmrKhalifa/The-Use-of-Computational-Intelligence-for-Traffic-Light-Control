@@ -1,0 +1,8 @@
+1. Copy the folder "single_intersection_no_traffic" to repo
+2. Change the path of the folder in the string in the python function "randomize_traffic" to the path of the folder single_intersection_no_traffic
+3. When training use the .sumocfg file in the folder "single_intersection_no_traffic"
+4. Call the function "randomize_traffic" before each episode.
+5. Save the mean values of the 4 metrics (journey time, speed, time loss, waiting time) for each episode. This is so we can plot their change during training.
+6. After training run the model on the old  .sumocfg file in the folder "single_intersection_random_trips" with the old traffic. Compute the mean of the 4 metrics as well as the VSSD and JTSD
+7. If you could save the model (weights of the Neural Network) every 50 epochs that would be nice
+8. Try to use a neural network with 100,100 as hidden layers, relu activation.
