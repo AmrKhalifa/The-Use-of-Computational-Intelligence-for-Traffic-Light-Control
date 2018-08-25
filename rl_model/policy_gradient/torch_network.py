@@ -7,6 +7,7 @@ from torch.autograd import Variable
 from torch.distributions import Categorical
 from torch.distributions import Bernoulli
 import torch.nn.functional as F
+path = "D:\\My study\\5th year\\Graduation Project\\traffic-optimization\\rl_model\\policy_gradient\model.pt"
 
 class PolicyNetwork:
 
@@ -16,7 +17,7 @@ class PolicyNetwork:
         # Loss and optimizer
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.model.learning_rate)
-        #self.optimizer = torch.optim.SGD(self.model.parameters(), lr=learning_rate)
+        #self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.model.learning_rate)
 
 
         pass
@@ -32,7 +33,16 @@ class PolicyNetwork:
 
         return action
 
-    def train(self, s, a, r):
+    def saveModel(self):
+
+
+        torch.save(self.model, path)
+
+    def loadModel(self):
+        self.model = torch.load(path)
+
+
+    def train(self, s, a, r,iteration):
         self.optimizer.zero_grad()
 
         states = torch.from_numpy(s)
@@ -50,17 +60,22 @@ class PolicyNetwork:
             loss.backward()
 
 
+
+
+
         self.optimizer.step()
-        return(loss.item())
+        torch.save(self.model,
+                   "D:\\My study\\5th year\\Graduation Project\\traffic-optimization\\rl_model\\policy_gradient\model_alpha_0.5\model_" + str(iteration) + ".pt")
+        return(loss.item(),np.sum(rewards.numpy()))
         pass
 
     class NeuralNet(nn.Module):
 
         n_features = 120
         n_classes = 2
-        layer1_neurons = 50
-        layer2_neurons = 30
-        learning_rate = .001
+        layer1_neurons = 100
+        layer2_neurons = 100
+        learning_rate = .0001
 
         def __init__(self):
             super().__init__()
@@ -79,5 +94,4 @@ class PolicyNetwork:
             out = self.fc3(out)
 
             return F.softmax(out)
-
 
