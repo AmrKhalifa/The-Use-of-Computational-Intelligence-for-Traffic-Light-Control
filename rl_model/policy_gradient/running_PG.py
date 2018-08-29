@@ -100,7 +100,9 @@ for i in range (iterations):
     sim.add_tickable(rc)
     sim.add_tickable(rewardCollector)
 
-    sim.add_simulation_component(SimulationOutputParser(sim)) 
+    parser = SimulationOutputParser(sim)
+    sim.add_tickable(parser)
+    sim.add_postrun(parser.post_run()) 
     sim.run(sumocfg1, gui=False,time_steps = 2000)
     sim.results['rewards'] = rewardCollector.get_reward_log()
     sim.results['actions']= actor.get_actions_list()
