@@ -7,8 +7,8 @@ from torch.autograd import Variable
 from torch.distributions import Categorical
 from torch.distributions import Bernoulli
 import torch.nn.functional as F
-path = "D:\\My study\\5th year\\Graduation Project\\traffic-optimization\\rl_model\\policy_gradient\model.pt"
-
+#path = "D:\\My study\\5th year\\Graduation Project\\traffic-optimization\\rl_model\\policy_gradient\model.pt"
+path = "D:\\My study\\5th year\\Graduation Project\\traffic-optimization\\rl_model\\policy_gradient\\model_alpha_05_\\model_55555.pt"
 class PolicyNetwork:
 
     def __init__(self):
@@ -65,7 +65,7 @@ class PolicyNetwork:
 
         self.optimizer.step()
         torch.save(self.model,
-                   "D:\\My study\\5th year\\Graduation Project\\traffic-optimization\\rl_model\\policy_gradient\model_alpha_0.5\model_" + str(iteration) + ".pt")
+                   "D:\\My study\\5th year\\Graduation Project\\traffic-optimization\\rl_model\\policy_gradient\\model_alpha_05_\\model_" + str(iteration) + ".pt")
         return(loss.item(),np.sum(rewards.numpy()))
         pass
 
@@ -94,4 +94,3 @@ class PolicyNetwork:
             out = self.fc3(out)
 
             return F.softmax(out)
-

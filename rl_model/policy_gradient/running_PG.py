@@ -59,7 +59,7 @@ def save_dataframe2CSV(f1,file):
 simulation_dataFrame = define_data_frame()
 
 
-gamma = .99
+gamma = .90
 def discount_and_norm_rewards(rewards):
     discounted_episode_rewards = np.zeros_like(rewards)
     cumulative = 0
@@ -102,7 +102,7 @@ for i in range (iterations):
 
     parser = SimulationOutputParser(sim)
     sim.add_tickable(parser)
-    sim.add_postrun(parser.post_run()) 
+    sim.add_postrun(parser.post_run) 
     sim.run(sumocfg1, gui=False,time_steps = 2000)
     sim.results['rewards'] = rewardCollector.get_reward_log()
     sim.results['actions']= actor.get_actions_list()
@@ -175,7 +175,7 @@ rewards.append(reward)
 
 #############################################################    
 
-save_dataframe2CSV(simulation_dataFrame,"D:\My study\\5th year\Graduation Project\\traffic-optimization\\rl_model\policy_gradient\pg_results.csv")
+save_dataframe2CSV(simulation_dataFrame,"D:\My study\\5th year\Graduation Project\\traffic-optimization\\rl_model\policy_gradient\pg_results_alpha_05.csv")
 
 policy_network.saveModel()
 print(rewards)
